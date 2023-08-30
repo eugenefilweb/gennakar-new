@@ -1,0 +1,37 @@
+Subject: Forgot Password
+From: General Nakar <notification@accessgov.ph>
+To: admin@admin.com
+MIME-Version: 1.0
+Date: Fri, 09 Jun 2023 03:55:40 +0000
+Message-ID: <4ed8132ea5c6520ec7036f93270346e0@accessgov.ph>
+Content-Type: multipart/alternative; boundary=5_dS0Rpz
+
+--5_dS0Rpz
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+You may change your password by clicking the link below. |=20
+
+https://ge=
+nnakar.accessgov.ph/api/v1/site/reset-password
+--5_dS0Rpz
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org=
+/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8=
+" />
+    <title></title>
+    </head>
+<body>
+       =20
+<p>You may change your password by clicking the link below. | </p>
+
+<p><a href=3D"https://gennakar.accessgov.ph/api/v1/site/reset-password">htt=
+ps://gennakar.accessgov.ph/api/v1/site/reset-password</a></p>    </body>
+</html>
+
+--5_dS0Rpz--

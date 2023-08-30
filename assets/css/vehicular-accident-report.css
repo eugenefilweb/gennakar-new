@@ -1,0 +1,90 @@
+.wizard-step[data-wizard-state="current"] .wizard-icon {background-color: #3699FF !important;}
+.wizard-step[data-wizard-state="current"] .wizard-check {display: none !important;}
+.wizard-step[data-wizard-state="current"] .wizard-number {display: block !important;}
+.wizard-step[data-wizard-state="completed"] .wizard-icon {background-color: #1BC5BD !important;}
+.wizard-step[data-wizard-state="completed"] .wizard-check {display: block !important;}
+.wizard-step[data-wizard-state="completed"] .wizard-number {display: none !important;}
+.wizard-step[data-wizard-state="completed"] .svg-icon svg g [fill] {fill: #fff;}
+
+.review-container table {
+	width: 100%;
+	border-color: #ccc;
+}
+
+.review-container .th-header {
+	background: #f3f6f9;
+}
+.review-container .border-separator {
+	border-left: hidden;
+    border-right: hidden;
+}
+.review-container th,
+.review-container td {
+    padding: 0.4em 0.5em;
+}
+
+
+#printable {width: 100%; color: #000; font-size: 12pt; height: 100%;}
+#printable tr, #printable td {border: 1px solid;}
+#printable td {padding: 0.4rem;}
+#printable .p-flex {display: flex;}
+#printable .p-text-center {text-align: center;}
+#printable .p-fs-2rem {font-size: 2rem;}
+#printable .p-bg-red {background: #e82319;}
+#printable .p-bg-black {background: #000;}
+#printable .p-color-black {color: #000;}
+#printable .p-color-white {color: #fff;}
+#printable .p-bc-black {border-color: #000 !important;}
+#printable .p-fw-600 {font-weight: 600;}
+#printable .p-mb-0 {margin-bottom: 0;}
+#printable .p-underline {text-decoration: underline;}
+#printable .p-bbw {border-bottom-color: #fff;}
+#printable .p-brw {border-right-color: #fff !important;}
+#printable .p-bbh {border-bottom: hidden;}
+#printable .p-fw600 {font-weight: 600;}
+#printable .p-fw500 {font-weight: 500;}
+#printable .p-fs1p5 {font-size: 1.5rem;}
+#printable .p-fs1p8 {font-size: 1.8rem;}
+#printable .p-fs1p3 {font-size: 1.3rem;}
+#printable .p-vab {vertical-align: bottom;}
+#printable .p-blcb {border-left-color: #000;}
+#printable .p-bbcb {border-bottom-color: #000;}
+#printable .p-brcb {border-right-color: #000 !important;}
+#printable .p-btcb {border-top-color: #000;}
+#printable .p-bh {border: hidden;}
+#printable .p-h2rem {height: 2rem;}
+#printable .p-h1p2rem {height: 1.2rem;}
+#printable .p-h10rem {height: 10rem;}
+#printable .p-h5rem {height: 5rem;}
+#printable .p-h30rem {height: 30rem;}
+#printable .p-h35rem {height: 35rem;}
+#printable .p-h40rem {height: 40rem;}
+#printable .p-h45rem {height: 45rem;}
+#printable .p-h47rem {height: 47rem;}
+#printable .p-h50rem {height: 50rem;}
+#printable .p-h12rem {height: 12rem;}
+#printable .p-vat {vertical-align: top;}
+#printable .p-text-right {text-align: right;}
+#printable .p-ml0p4 {margin: auto 0.4rem;}
+#printable .p-lh1p5 {line-height: 1.5rem;}
+#printable input[type="radio"] {pointer-events: none;}
+#printable .border-0 {border: none;}
+#printable .bth {border-top: hidden;}
+#printable .brh {border-right: hidden;}
+#printable .blh {border-left: hidden;}
+#printable .td-header {background: #000; border-left-color: #000; border-right-color: #000; color: #fff;}
+#printable .td-optional-header {background: #7f7f7f; border-left-color: #7f7f7f; border-right-color: #7f7f7f; color: #fff; font-style: italic;}
+#printable .underline {text-decoration: underline;}
+#printable label.radio {font-size: 12pt;}
+#printable .radio-list {line-height: 1.2em;}
+#printable .h100vh {height: 95rem;}
+.printable-data-privacy {
+	text-align: justify;
+	font-family: 'Times New Roman', serif;
+	font-size: 14.5pt !important;
+	line-height: 1.3em;
+}
+#printable .indent {text-indent: 70px;}
+.printable-data-privacy .display-3{
+	font-size: 3.3rem !important;
+}

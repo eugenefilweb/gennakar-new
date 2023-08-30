@@ -1,0 +1,17 @@
+Message-ID: <92536738e429c67866d057ffedfd3c16@localhost>
+Date: Mon, 10 Oct 2022 05:19:14 +0000
+Subject: Forgot Password
+From: "Example.com mailer" <noreply@example.com>
+To: admin@admin.com
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+
+<p>You may change your password by clicking the link below. | prt-4TfOrXz1j=
+J-1665365751</p>
+
+<p><a href=3D"http://localhost/gennakar/web/api/v1/site/reset-password?pass=
+word_reset_token=3Dprt-4TfOrXz1jJ-1665365751">http://localhost/gennakar/web=
+/api/v1/site/reset-password?password_reset_token=3Dprt-4TfOrXz1jJ-166536575=
+1</a></p>

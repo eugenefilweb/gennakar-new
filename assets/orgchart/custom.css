@@ -1,0 +1,54 @@
+#tree {
+    width: 100%;
+    height: 100%;
+}
+.boc-search {
+    right: 3rem!important;
+    top: 0!important;
+}
+div[data-ctrl-menu] {
+    right: 0 !important;
+    top: 0 !important;
+}
+.boc-form-field {
+    min-width: 30rem !important;
+}
+label[for="boc-ppdf-header"],
+label[for="boc-ppdf-footer"],
+label[for="boc-ppdf-margin"],
+label[for="boc-size"],
+label[for="boc-ppdf-layout"],
+label[for="boc-scale"]
+{
+    float: left;
+}
+#boc-ppdf-header, 
+#boc-ppdf-footer, 
+#boc-ppdf-margin, 
+#boc-ppdf-size, 
+#boc-ppdf-layout, 
+#boc-ppdf-scale 
+{
+    display: block;
+    width: 100% !important;
+    height: calc(1.5em + 1.3rem + 2px);
+    padding: 0.65rem 1rem;
+    font-size: 1rem !important;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #3F4254 !important;
+    background-color: #ffffff;
+    background-clip: padding-box;
+    border: 1px solid #E4E6EF;
+    border-radius: 0.42rem;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+}
+.boc-form-field {
+    padding-left: 10px;
+    padding-right: 10px;
+}

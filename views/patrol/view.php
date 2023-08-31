@@ -11,6 +11,10 @@ use app\widgets\Detail;
 use app\widgets\Grid;
 use app\widgets\OpenLayer;
 
+
+use yii\web\View;
+
+
 /* @var $this yii\web\View */
 /* @var $model app\models\Patrol */
 
@@ -21,6 +25,15 @@ $this->params['searchModel'] = $model->searchModel;
 $this->params['wrapCard'] = false;
 $this->params['activeMenuLink'] = $model->activeMenuLink;
 $this->params['headerButtons'] = $model->createButton;
+
+
+
+
+$this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css',['position' => View::POS_HEAD]);
+$this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
+// $this->registerJsFile('https://js.sentry-cdn.com/9c5feb5b248b49f79a585804c259febc.min.js', ['crossorigin' => 'anonymous', 'position' => View::POS_HEAD]);
+$this->registerJsFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js', ['position' => View::POS_HEAD]);
+$this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css',['position' => View::POS_HEAD]);
 ?>
 <div class="patrol-view-page">
     <?= Anchors::widget([
@@ -41,7 +54,14 @@ $this->params['headerButtons'] = $model->createButton;
                     'class' => 'card-toolbar'
                 ]),
             ]) ?>
-                <?= OpenLayer::widget([
+
+
+                <div id="map" style="height: 500px;"></div>
+                
+
+
+
+                <?php /* echo OpenLayer::widget([
                     'height' => '500px;',
                     'withSearch' => false,
                     'zoom' => 13,
@@ -52,7 +72,10 @@ $this->params['headerButtons'] = $model->createButton;
                     'addEndMarker' => true,
                     // 'showCurrentLocation' => true,
                     'zoom' => 14
-                ]) ?>
+                ]) */?>
+
+
+
             <?php $this->endContent() ?>
         </div>
         <div class="col-md-5">
@@ -170,3 +193,112 @@ $this->params['headerButtons'] = $model->createButton;
         </div>
     </div>
 </div>
+
+
+<script>
+                    mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
+                    var map = new mapboxgl.Map({
+                        container: 'map',
+                        style: 'mapbox://styles/mapbox/streets-v12',
+                        center: [<?= $model->formattedCoordinates[0]['lon'] ?>, <?= $model->formattedCoordinates[0]['lat'] ?>],
+                        zoom: 14
+                    });
+
+                    var coordinates = <?= json_encode($model->formattedCoordinates) ?>;
+
+
+                    // console.log(coordinates);
+
+                    // var route = {
+                    //     type: 'Feature',
+                    //     geometry: {
+                    //         type: 'LineString',
+                    //         coordinates: coordinates.map(coord => [coord.lon, coord.lat])
+                    //     }
+                    // };
+
+                    // const coordinates = [
+                    //     {"lat":"14.336127","lon":"121.0772825","timestamp":"1693181966446"},
+                    //     {"lat":"14.3361662","lon":"121.0772149","timestamp":"1693181967515"},
+                    //     {"lat":"14.3362019","lon":"121.0771479","timestamp":"1693181968449"},
+                    //     {"lat":"14.3362321","lon":"121.0770857","timestamp":"1693181969424"},
+                    //     {"lat":"14.3362645","lon":"121.0770191","timestamp":"1693181970518"},
+                    //     {"lat":"14.3649585","lon":"121.0503392","timestamp":"1693183083511"},
+                    //     {"lat":"14.364914","lon":"121.0502661","timestamp":"1693183085390"}
+                    // ];
+
+                    
+
+                    let waypoints = coordinates.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
+                    // console.log(waypoints);
+
+                    const waypointsCount = waypoints.length;
+                    const waypointsMiddle = Math.floor(waypointsCount / 2);
+                    waypoints = [waypoints[0], waypoints[waypointsMiddle-1], waypoints[waypointsCount - 1]];
+
+                    // console.log(waypointsFinal);
+
+                    // Add the Mapbox Directions control
+                    const directions = new MapboxDirections({
+                        accessToken: mapboxgl.accessToken,
+                        unit: 'metric',                  // Choose the unit for distance ('imperial' or 'metric')
+                        profile: 'mapbox/driving',       // Choose the profile for directions (e.g., 'mapbox/driving', 'mapbox/cycling')
+                        alternatives: false,             // Show alternative routes (true/false)
+                        controls: { inputs: false, instructions: true }, // Configure control elements
+                        interactive: true                // Enable user interaction with the map
+                    });
+
+                    map.addControl(directions, 'top-left');
+
+                    // // // Set initial directions
+                    // // directions.setOrigin(start);
+                    // // directions.setDestination(end);
+
+
+                    // directions.setOrigin(waypointsFinal[0]);
+                    // directions.setDestination(waypointsFinal[waypointsFinal.length - 1]);
+                    // directions.setWaypoints(waypointsFinal.slice(1, -1));
+
+                    // Set waypoints
+                    // for (let i = 0; i < waypoints.length; i++) {
+                    // for (let i = 0; i < waypointsFinal.length; i++) {
+                    //     if (i === 0) {
+                    //         directions.setOrigin(waypointsFinal[i]);
+                    //     } else if (i === waypointsFinal.length - 1) {
+                    //         directions.setDestination(waypointsFinal[i]);
+                    //     } else {
+                    //         directions.addWaypoint(i - 1, waypointsFinal[i]);
+                    //     }
+                    // }
+                    for (let i = 0; i < waypoints.length; i++) {
+                        if (i === 0) {
+                            directions.setOrigin(waypoints[i]);
+                        } else if (i === waypoints.length - 1) {
+                            directions.setDestination(waypoints[i]);
+                        } else {
+                            directions.addWaypoint(i - 1, waypoints[i]);
+                        }
+                    }
+
+                    // map.on('load', function() {
+                    //     map.addLayer({
+                    //         id: 'route',
+                    //         type: 'line',
+                    //         source: {
+                    //             type: 'geojson',
+                    //             data: route
+                    //         },
+                    //         paint: {
+                    //             'line-color': '#888',
+                    //             'line-width': 6
+                    //         }
+                    //     });
+
+                    //     var startCoord = coordinates[0];
+                    //     var endCoord = coordinates[coordinates.length - 1];
+
+                    //     new mapboxgl.Marker().setLngLat(startCoord).addTo(map);
+                    //     new mapboxgl.Marker().setLngLat(endCoord).addTo(map);
+                    // });
+
+                </script>

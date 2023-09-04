@@ -269,12 +269,14 @@ class PatrolController extends Controller
         $coordinates = App::foreach($dataProvider->models, function ($model) use($searchModel) {
             $data = App::foreach(array_values($model->coordinates), function($d) use($model, $searchModel) {
                 $photo = Url::image($model->userPhoto, ['w' => 25]);
+                $timestamp = App::formatter()->asDateToTimezone(date('m/d/Y h:i:s A', ($d['timestamp'] / 1000)), 'm/d/Y h:i:s A');
 
                 $d['description'] = <<< HTML
                     <div> 
                         <strong>Patroller</strong>: {$model->username}
                         <br><strong>Latitude</strong>: {$d['lat']}
                         <br><strong>Longitude</strong>: {$d['lon']}
+                        <br><strong>Timestamp</strong>: {$timestamp}
                     </div>
                 HTML;
                 if ($searchModel->show_user_photo == 0) {

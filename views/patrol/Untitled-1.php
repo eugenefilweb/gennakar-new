@@ -11,7 +11,9 @@ use app\widgets\Detail;
 use app\widgets\Grid;
 use app\widgets\OpenLayer;
 
+
 use yii\web\View;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Patrol */
@@ -30,35 +32,6 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
 $this->registerJsFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js', ['position' => View::POS_HEAD]);
 $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css',['position' => View::POS_HEAD]);
 ?>
-<style>
-
-/* #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-    } */
-        .marker {
-        /* background-image: url('https://freepngimg.com/thumb/map/66932-openstreetmap-map-google-icons-maps-computer-marker.png'); */
-        /* background-size: cover; */
-        background-color: gray;
-        width: 7px;
-        height: 7px;
-        /* border: 2px solid green; */
-        border-radius: 50%;
-        cursor: pointer;
-    }
-
-    .mapboxgl-popup {
-        max-width: 200px;
-    }
-
-    .mapboxgl-popup-content {
-        text-align: center;
-        font-family: 'Open Sans', sans-serif;
-    }
-</style>
-
 <div class="patrol-view-page">
     <?= Anchors::widget([
     	'names' => ['update', 'duplicate', 'delete', 'log'], 
@@ -218,119 +191,108 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
     </div>
 </div>
 
+//v1
+<!-- <script>
+                    mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
+                    var map = new mapboxgl.Map({
+                        container: 'map',
+                        style: 'mapbox://styles/mapbox/streets-v12',
+                        center: [<?= $model->formattedCoordinates[0]['lon'] ?>, <?= $model->formattedCoordinates[0]['lat'] ?>],
+                        zoom: 14
+                    });
 
-<script>
+                    var coordinates = <?= json_encode($model->formattedCoordinates) ?>;
 
-        var coordinates = <?= json_encode($model->formattedCoordinates) ?>;
-        let waypoints = coordinates.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
+                    // console.log(coordinates);
 
-        mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
+                    // var route = {
+                    //     type: 'Feature',
+                    //     geometry: {
+                    //         type: 'LineString',
+                    //         coordinates: coordinates.map(coord => [coord.lon, coord.lat])
+                    //     }
+                    // };
 
-        const endpoints = [waypoints[0], waypoints[waypoints.length -1]];
-        const center = waypoints[Math.floor(waypoints.length/2) -1];
+                    // const coordinates = [
+                    //     {"lat":"14.336127","lon":"121.0772825","timestamp":"1693181966446"},
+                    //     {"lat":"14.3361662","lon":"121.0772149","timestamp":"1693181967515"},
+                    //     {"lat":"14.3362019","lon":"121.0771479","timestamp":"1693181968449"},
+                    //     {"lat":"14.3362321","lon":"121.0770857","timestamp":"1693181969424"},
+                    //     {"lat":"14.3362645","lon":"121.0770191","timestamp":"1693181970518"},
+                    //     {"lat":"14.3649585","lon":"121.0503392","timestamp":"1693183083511"},
+                    //     {"lat":"14.364914","lon":"121.0502661","timestamp":"1693183085390"}
+                    // ];
 
-        // Calculate the bounding box
-        const bounds = waypoints.reduce(function(bounds, coord) {
-            return bounds.extend(coord);
-        }, new mapboxgl.LngLatBounds(waypoints[0], waypoints[0]));
+                    let waypoints = coordinates.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
+                    console.log(waypoints);
 
-        const map1 = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v12',
-            center: bounds.getCenter(),
-            zoom: 16
-        });
 
-        map1.on('load', () => {
-            map1.addSource('lines', {
-                'type': 'geojson',
-                'data': {
-                    'type': 'FeatureCollection',
-                    'features': [
-                        {
-                            'type': 'Feature',
-                            'properties': {
-                                // 'color': '#F7455D' // red
-                                'color': '#33C9EB' // blue
-                            },
-                            'geometry': {
-                                'type': 'LineString',
-                                'coordinates': waypoints
-                            }
+                    //     // Limit waypoints to 25
+                    // if (waypoints.length > 25) {
+                    //     const interval = Math.floor(waypoints.length / 25);
+                    //     const filteredWaypoints = waypoints.filter((_, index) => index % interval === 0);
+                    //     waypoints = [waypoints[0], ...filteredWaypoints, waypoints[waypoints.length - 1]];
+                    // }
+
+                    const waypointsCount = waypoints.length;
+                    const waypointsMiddle = Math.floor(waypointsCount / 2);
+                    waypoints = [waypoints[0], waypoints[waypointsMiddle-1], waypoints[waypointsCount - 1]];
+
+                    console.log(waypoints);
+
+                    const directions = new MapboxDirections({
+                    accessToken: mapboxgl.accessToken,
+                    unit: 'metric',                  // Choose the unit for distance ('imperial' or 'metric')
+                    profile: 'mapbox/driving',       // Choose the profile for directions (e.g., 'mapbox/driving', 'mapbox/cycling')
+                    alternatives: false,             // Show alternative routes (true/false)
+                    controls: { inputs: false, instructions: false }, // Configure control elements
+                    interactive: true                // Enable user interaction with the map
+		            });
+
+                    map.addControl(directions, 'top-left');
+
+                    // // Set initial directions
+                    // directions.setOrigin(start);
+                    // directions.setDestination(end);
+
+                    function loadDirections() {
+                    for (let i = 0; i < waypoints.length; i++) {
+                        if (i === 0) {
+                        directions.setOrigin(waypoints[i]);
+                        } else if (i === waypoints.length - 1) {
+                        directions.setDestination(waypoints[i]);
+                        } else {
+                        directions.addWaypoint(i - 1, waypoints[i]);
                         }
-                    ]
-                }
-            });
-
-            map1.addLayer({
-                'id': 'lines',
-                'type': 'line',
-                'source': 'lines',
-                'paint': {
-                    'line-width': 15,
-                    'line-color': ['get', 'color']
-                }
-            });
-        
-            const geojson = {
-            'type': 'FeatureCollection',
-            'features': []
-            };
-
-            for (const waypoint of waypoints) {
-            geojson.features.push({
-                'type': 'Feature',
-                'geometry': {
-                'type': 'Point',
-                'coordinates': waypoint
-                },
-                'properties': {
-                'title': 'Mapbox',
-                'description': 'Washington, D.C.'
-                }
-            });
-            }
-
-            // add markers to map
-            for (const feature of geojson.features) {
-            // create a HTML element for each feature
-            const el = document.createElement('div');
-            el.className = 'marker';
-
-            // make a marker for each feature and add it to the map
-            new mapboxgl.Marker(el).setLngLat(feature.geometry.coordinates).setPopup(new mapboxgl.Popup({
-                offset: 25
-            }) // add popups
-            .setHTML(` < h3 > $ {
-                feature.properties.title
-            } < /h3><p>${feature.properties.description}</p > `)).addTo(map1);
-            }
-
-            // Add markers with rotation based on bearing
-            for (let i = 0; i < endpoints.length; i++) {
-                const feature = {
-                    type: 'Feature',
-                    geometry: {
-                        type: 'Point',
-                        coordinates: endpoints[i]
-                    },
-                    properties: {
-                        title: 'Mapbox',
-                        description: 'Washington, D.C.'
                     }
-                };
+                    // directions.route();
+                    }
 
-                const rotation = 0;
+                    map.on('load',  function() {
+                    loadDirections();
+                    });
 
-                new mapboxgl.Marker({ rotation: rotation })
-                    .setLngLat(feature.geometry.coordinates)
-                    .setPopup(new mapboxgl.Popup({
-                        offset: 25
-                    })
-                    .setHTML(`<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`))
-                    .addTo(map1);
-            }
+                    // map.on('load', function() {
+                    //     map.addLayer({
+                    //         id: 'route',
+                    //         type: 'line',
+                    //         source: {
+                    //             type: 'geojson',
+                    //             data: route
+                    //         },
+                    //         paint: {
+                    //             'line-color': '#888',
+                    //             'line-width': 6
+                    //         }
+                    //     });
 
-        });
+                    //     var startCoord = coordinates[0];
+                    //     var endCoord = coordinates[coordinates.length - 1];
 
-</script>
+                    //     new mapboxgl.Marker().setLngLat(startCoord).addTo(map);
+                    //     new mapboxgl.Marker().setLngLat(endCoord).addTo(map);
+                    // });
+
+</script> -->
+
+//v2

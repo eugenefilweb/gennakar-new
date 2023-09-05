@@ -296,7 +296,6 @@ class PatrolController extends Controller
             return $data;
         }, false);
 
-        
 
         return $this->render('map', [
             'searchModel' => $searchModel,

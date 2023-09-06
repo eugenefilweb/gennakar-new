@@ -29,6 +29,7 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
 // $this->registerJsFile('https://js.sentry-cdn.com/9c5feb5b248b49f79a585804c259febc.min.js', ['crossorigin' => 'anonymous', 'position' => View::POS_HEAD]);
 $this->registerJsFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js', ['position' => View::POS_HEAD]);
 $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css',['position' => View::POS_HEAD]);
+
 ?>
 <style>
 
@@ -82,9 +83,6 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
 
                 <div id="map" style="height: 500px;"></div>
                 
-
-
-
                 <?php /* echo OpenLayer::widget([
                     'height' => '500px;',
                     'withSearch' => false,
@@ -218,7 +216,6 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
     </div>
 </div>
 
-
 <script>
 
         var coordinates = <?= json_encode($model->formattedCoordinates) ?>;
@@ -334,3 +331,141 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
         });
 
 </script>
+
+<!-- <script>
+
+    var coordinates = <?= json_encode($model->formattedCoordinates) ?>;
+    let waypoints1 = coordinates.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZXhhbXBsZXMiLCJhIjoiY2p0MG01MXRqMW45cjQzb2R6b2ptc3J4MSJ9.zA2W0IkI0c6KaAhJfk9bWg';
+		const map1 = new mapboxgl.Map({
+			container: 'map',
+			style: 'mapbox://styles/mapbox/streets-v12',
+			center: [121.0772825, 14.336127],
+			zoom: 13
+		});
+
+    // let waypoints1=[[121.0356339,14.5757805],[121.0357106,14.5757503],[121.0357937,14.5757234],[121.0358788,14.5757098],[121.0359599,14.5757066],[121.0360376,14.5757147],[121.0361093,14.5757285],[121.0361676,14.5757452],[121.0362425,14.5757742],[121.0363057,14.5757943],[121.0363796,14.5758169],[121.036431,14.5758342],[121.0364903,14.575852],[121.0365553,14.5758691],[121.0366267,14.5758869],[121.0367029,14.5759051],[121.0367844,14.575923],[121.0368713,14.5759398],[121.037053,14.5759763],[121.0371505,14.5759935],[121.0372463,14.5760116],[121.0373393,14.5760296],[121.0374296,14.5760471],[121.0375189,14.5760675],[121.0376049,14.5760877],[121.0376869,14.5761085],[121.0377663,14.5761274],[121.0378491,14.5761441],[121.0379271,14.5761602],[121.0380002,14.5761736],[121.0380715,14.5761878],[121.0381322,14.5762024],[121.0381904,14.5762142],[121.038247,14.5762251],[121.0382994,14.5762361],[121.038354,14.5762468],[121.0384129,14.5762579],[121.0384725,14.5762711],[121.0385325,14.5762851],[121.0385915,14.5763004],[121.0386403,14.5763139],[121.0387073,14.5763474],[121.0387388,14.5764469],[121.0387362,14.5765122],[121.0387382,14.576579],[121.0387403,14.5766472],[121.0387397,14.5767291],[121.0387401,14.5767895],[121.0387439,14.5768475],[121.0387466,14.5768933],[121.0387492,14.5769395],[121.0387588,14.5770162],[121.0387707,14.5770675],[121.03878,14.577141],[121.0387747,14.5772376],[121.0387641,14.5773057],[121.0387545,14.57737],[121.0387428,14.5774285],[121.0387308,14.5774808],[121.0387144,14.5775514],[121.038706,14.577599],[121.0387164,14.5776439],[121.0387843,14.5776792],[121.0388388,14.5776883],[121.0389002,14.577698],[121.0389623,14.5777107],[121.0390215,14.5777254],[121.0390752,14.577741],[121.0391584,14.5777785],[121.0391993,14.5778185],[121.0392776,14.5778638],[121.0393467,14.5778896],[121.0394133,14.5778945],[121.0395044,14.5778742],[121.0395613,14.5778516],[121.0396176,14.5778301],[121.0396795,14.5778091],[121.0397453,14.5777854],[121.0398079,14.5777643],[121.0398686,14.577744],[121.0399271,14.5777241],[121.0399858,14.5777031],[121.0400445,14.5776824],[121.0401005,14.5776628],[121.0401568,14.5776437],[121.0402129,14.5776262],[121.0402681,14.5776103],[121.0403225,14.5775933],[121.0403763,14.5775761],[121.0404283,14.5775595],[121.0404817,14.5775419],[121.0405378,14.577526],[121.0405945,14.5775121],[121.0406482,14.5774971],[121.0406984,14.5774828],[121.0407453,14.5774691],[121.040793,14.577454],[121.0408416,14.577437],[121.0408919,14.5774202],[121.0409398,14.5774036]];
+
+    function extractProportionalItems(items, numberOfItemsToExtract) {
+      const extractedItems = [];
+      const extractedItemsIndex = [];
+      const step = Math.floor(items.length / numberOfItemsToExtract);
+
+      for (let i = 0; i < numberOfItemsToExtract; i++) {
+        const index = Math.floor(i * step);
+        extractedItems.push(items[index]);
+        extractedItemsIndex.push(index);
+
+      }
+      console.log(extractedItemsIndex);
+
+      return extractedItems;
+    }
+
+    // const items = [...]; // Your array of 100 items here
+    const numberOfItemsToExtract = 25;
+    waypoints1 = extractProportionalItems(waypoints1, numberOfItemsToExtract);
+
+    const waypointsCount = waypoints1.length;
+    const waypointsMiddle = Math.floor(waypointsCount / 2);
+    waypoints1 = [waypoints1[0], waypoints1[waypointsMiddle-1], waypoints1[waypointsCount - 1]];
+
+    // Add the Mapbox Directions control
+    const directions = new MapboxDirections({
+        accessToken: mapboxgl.accessToken,
+        unit: 'metric',                  // Choose the unit for distance ('imperial' or 'metric')
+        profile: 'mapbox/driving',       // Choose the profile for directions (e.g., 'mapbox/driving', 'mapbox/cycling')
+        alternatives: false,             // Show alternative routes (true/false)
+        controls: { inputs: false, instructions: false }, // Configure control elements
+        interactive: true                // Enable user interaction with the map
+    });
+
+    map1.addControl(directions, 'top-left');
+
+    function loadDirections() {
+      for (let i = 0; i < waypoints1.length; i++) {
+        if (i === 0) {
+          directions.setOrigin(waypoints1[i]);
+        } else if (i === waypoints1.length - 1) {
+          directions.setDestination(waypoints1[i]);
+        } else {
+          directions.addWaypoint(i - 1, waypoints1[i]);
+        }
+      }
+      // directions.route();
+    }
+
+    map1.on('load',  function() {
+      loadDirections();
+    });
+</script> -->
+
+<!-- <script>
+
+    var coordinates = <?= json_encode($model->formattedCoordinates) ?>;
+    let waypoints1 = coordinates.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
+
+	mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
+		const map = new mapboxgl.Map({
+			container: 'map',
+			style: 'mapbox://styles/mapbox/streets-v12',
+			center: [121.0772825, 14.336127],
+			zoom: 13
+		});
+
+    // let waypoints1=[[121.0356339,14.5757805],[121.0357106,14.5757503],[121.0357937,14.5757234],[121.0358788,14.5757098],[121.0359599,14.5757066],[121.0360376,14.5757147],[121.0361093,14.5757285],[121.0361676,14.5757452],[121.0362425,14.5757742],[121.0363057,14.5757943],[121.0363796,14.5758169],[121.036431,14.5758342],[121.0364903,14.575852],[121.0365553,14.5758691],[121.0366267,14.5758869],[121.0367029,14.5759051],[121.0367844,14.575923],[121.0368713,14.5759398],[121.037053,14.5759763],[121.0371505,14.5759935],[121.0372463,14.5760116],[121.0373393,14.5760296],[121.0374296,14.5760471],[121.0375189,14.5760675],[121.0376049,14.5760877],[121.0376869,14.5761085],[121.0377663,14.5761274],[121.0378491,14.5761441],[121.0379271,14.5761602],[121.0380002,14.5761736],[121.0380715,14.5761878],[121.0381322,14.5762024],[121.0381904,14.5762142],[121.038247,14.5762251],[121.0382994,14.5762361],[121.038354,14.5762468],[121.0384129,14.5762579],[121.0384725,14.5762711],[121.0385325,14.5762851],[121.0385915,14.5763004],[121.0386403,14.5763139],[121.0387073,14.5763474],[121.0387388,14.5764469],[121.0387362,14.5765122],[121.0387382,14.576579],[121.0387403,14.5766472],[121.0387397,14.5767291],[121.0387401,14.5767895],[121.0387439,14.5768475],[121.0387466,14.5768933],[121.0387492,14.5769395],[121.0387588,14.5770162],[121.0387707,14.5770675],[121.03878,14.577141],[121.0387747,14.5772376],[121.0387641,14.5773057],[121.0387545,14.57737],[121.0387428,14.5774285],[121.0387308,14.5774808],[121.0387144,14.5775514],[121.038706,14.577599],[121.0387164,14.5776439],[121.0387843,14.5776792],[121.0388388,14.5776883],[121.0389002,14.577698],[121.0389623,14.5777107],[121.0390215,14.5777254],[121.0390752,14.577741],[121.0391584,14.5777785],[121.0391993,14.5778185],[121.0392776,14.5778638],[121.0393467,14.5778896],[121.0394133,14.5778945],[121.0395044,14.5778742],[121.0395613,14.5778516],[121.0396176,14.5778301],[121.0396795,14.5778091],[121.0397453,14.5777854],[121.0398079,14.5777643],[121.0398686,14.577744],[121.0399271,14.5777241],[121.0399858,14.5777031],[121.0400445,14.5776824],[121.0401005,14.5776628],[121.0401568,14.5776437],[121.0402129,14.5776262],[121.0402681,14.5776103],[121.0403225,14.5775933],[121.0403763,14.5775761],[121.0404283,14.5775595],[121.0404817,14.5775419],[121.0405378,14.577526],[121.0405945,14.5775121],[121.0406482,14.5774971],[121.0406984,14.5774828],[121.0407453,14.5774691],[121.040793,14.577454],[121.0408416,14.577437],[121.0408919,14.5774202],[121.0409398,14.5774036]];
+
+    function extractProportionalItems(items, numberOfItemsToExtract) {
+      const extractedItems = [];
+      const extractedItemsIndex = [];
+      const step = Math.floor(items.length / numberOfItemsToExtract);
+
+      for (let i = 0; i < numberOfItemsToExtract; i++) {
+        const index = Math.floor(i * step);
+        extractedItems.push(items[index]);
+        extractedItemsIndex.push(index);
+
+      }
+      console.log(extractedItemsIndex);
+
+      return extractedItems;
+    }
+
+    // const items = [...]; // Your array of 100 items here
+    const numberOfItemsToExtract = 25;
+    waypoints1 = extractProportionalItems(waypoints1, numberOfItemsToExtract);
+
+    const waypointsCount = waypoints1.length;
+    const waypointsMiddle = Math.floor(waypointsCount / 2);
+    waypoints1 = [waypoints1[0], waypoints1[waypointsMiddle-1], waypoints1[waypointsCount - 1]];
+
+    // Add the Mapbox Directions control
+    const directions = new MapboxDirections({
+        accessToken: mapboxgl.accessToken,
+        unit: 'metric',                  // Choose the unit for distance ('imperial' or 'metric')
+        profile: 'mapbox/driving',       // Choose the profile for directions (e.g., 'mapbox/driving', 'mapbox/cycling')
+        alternatives: false,             // Show alternative routes (true/false)
+        controls: { inputs: false, instructions: false }, // Configure control elements
+        interactive: true                // Enable user interaction with the map
+    });
+
+    map1.addControl(directions, 'top-left');
+
+    function loadDirections() {
+      for (let i = 0; i < waypoints1.length; i++) {
+        if (i === 0) {
+          directions.setOrigin(waypoints1[i]);
+        } else if (i === waypoints1.length - 1) {
+          directions.setDestination(waypoints1[i]);
+        } else {
+          directions.addWaypoint(i - 1, waypoints1[i]);
+        }
+      }
+      // directions.route();
+    }
+
+    map1.on('load',  function() {
+      loadDirections();
+    });
+</script> -->

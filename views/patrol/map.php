@@ -1,5 +1,5 @@
 <?php
-use app\widgets\Mapbox;
+
 use \yii\data\Pagination;
 use app\helpers\App;
 use app\helpers\Html;
@@ -10,6 +10,7 @@ use app\widgets\ActiveForm;
 use app\widgets\LinkPager;
 use app\widgets\OpenLayer;
 use app\widgets\SearchButton;
+
 use yii\web\View;
 
 $this->title = 'Patrols: Map';
@@ -17,6 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->params['searchModel'] = $searchModel; 
 $this->params['activeMenuLink'] = '/patrol/map';
 $this->params['wrapCard'] = false;
+
 
 $this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
 $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
@@ -26,36 +28,6 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
 
 $waypoints = call_user_func_array('array_merge', $coordinates);
 ?>
-
-<style>
-    /* #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-    } */
-
-    .marker {
-        /* background-image: url('https://freepngimg.com/thumb/map/66932-openstreetmap-map-google-icons-maps-computer-marker.png'); */
-        /* background-size: cover; */
-        background-color: gray;
-        width: 7px;
-        height: 7px;
-        /* border: 2px solid green; */
-        border-radius: 50%;
-        cursor: pointer;
-    }
-
-    .mapboxgl-popup {
-        max-width: 200px;
-    }
-
-    .mapboxgl-popup-content {
-        text-align: center;
-        font-family: 'Open Sans', sans-serif;
-    }
-</style>
-
 <div class="patrol-index-page">
     <div class="row">
         <div class="col-md-8">
@@ -67,17 +39,26 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
                 'stretch' => true
             ]) ?>
 
-            <div id="map" style="height: 500px;"></div>
+                <?php /* OpenLayer::widget([
+                    'multipleCoordinates' => $coordinates,
+                    'addStartMarker' => true,
+                    'addEndMarker' => true,
+                    'addMarkers' => false,
+                    'withSearch' => false,
+                    'withLine' => true,
+                    'zoom' => $searchModel->map_zoom_level
+                ]) */?>
+                
+                <div id="map" style="height: 500px;"></div>
+                
 
             <?php $this->endContent() ?>
             
         </div>
         <div class="col-md-4">
-
             <?php $this->beginContent('@app/views/layouts/_card_wrapper.php', [
                 'title' => 'Advanced Filter',
             ]) ?>
-
                 <?php $form = ActiveForm::begin(['id' => 'patrol-form', 'method' => 'get', 'action' => ['patrol/map']]); ?>
                     <div class="scroll scroll-pull" data-scroll="true" data-wheel-propagation="true" style="height: 60vh">
                         <div class="accordion accordion-solid accordion-toggle-plus" id="accordion-filter">
@@ -119,22 +100,21 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
                             </div>
 
                             <div class="text-center">
-                                <?= LinkPager::widget([
+                                <?=LinkPager::widget([
                                     'options' => [
                                         'class' => 'mt-5 justify-content-center app-linkpager d-flex flex-wrap justify-content-center py-2'
                                     ],
                                     'pagination' => new Pagination(['totalCount' => $dataProvider->totalCount])
                                 ]) ?>
                             </div>
+
                         </div>
                     </div>
                     <div class="mt-5">
                         <?= SearchButton::widget() ?>
                     </div>
                 <?php ActiveForm::end(); ?>
-
             <?php $this->endContent() ?>
-
         </div>
     </div>
 </div>
@@ -144,6 +124,7 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
 
   const waypoints = <?=json_encode($waypoints) ?>;
   let waypointsArray = <?=json_encode($coordinates) ?>;
+  console.log(waypointsArray);
   const endpoints = [];
 
   const waypointsList = [];
@@ -183,7 +164,7 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v12',
     center: waypoints[0],
-    zoom: 16
+    zoom: <?= json_encode($searchModel->map_zoom_level)?>
   });
 
   map1.on('load', () => {
@@ -260,8 +241,9 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
     }
 
     // Set the map's center and zoom level to fit the extent
-    map1.fitBounds(bounds, {
-      padding: 50, // You can adjust the padding as needed
-    });
+    // map1.fitBounds(bounds, {
+    //   padding: 50, // You can adjust the padding as needed
+    // });
   });
 </script>
+

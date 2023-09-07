@@ -22,7 +22,7 @@ use app\widgets\RecordStatusFilter;
     
     <?php 
    // $model->status=0;
-    echo $form->field($model, 'status')->hiddenInput(['name'=>'status'])->label(false);
+    // echo $form->field($model, 'status')->hiddenInput(['name'=>'status'])->label(false);
     ?>
     
     

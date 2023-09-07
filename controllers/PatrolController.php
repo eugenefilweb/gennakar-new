@@ -259,12 +259,24 @@ class PatrolController extends Controller
 
     public function actionMap()
     {
+
         $searchModel = new PatrolSearch([
             'searchAction' => ['patrol/map']
         ]);
         $queryParams = App::queryParams();
         $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
         $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
+
+        // // Yii::$app->session->set('query', $queryParams);
+        // // print_r(Yii::$app->session->get('query'));
+        // // die;
+
+        // // Yii::$app->session->remove('query');
+        // // print_r($dataProvider);
+        // print_r($dataProvider->models);
+        // // print_r($queryParams);s
+        // die;
+
 
         $coordinates = App::foreach($dataProvider->models, function ($model) use($searchModel) {
             $data = App::foreach(array_values($model->coordinates), function($d) use($model, $searchModel) {
@@ -296,12 +308,17 @@ class PatrolController extends Controller
             return $data;
         }, false);
 
+        // Yii::$app->session->set('coordinates', $coordinates);
+        // print_r(Yii::$app->session->get('coordinates'));
+        // // Yii::$app->session->remove('query');
+        // die;
 
         return $this->render('map', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'coordinates' => $coordinates,
         ]);
+
     }
 
     public function actionValidate($id)

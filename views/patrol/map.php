@@ -28,6 +28,36 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
 
 $waypoints = call_user_func_array('array_merge', $coordinates);
 ?>
+
+<style>
+    /* #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+    } */
+
+    .marker {
+        /* background-image: url('https://freepngimg.com/thumb/map/66932-openstreetmap-map-google-icons-maps-computer-marker.png'); */
+        /* background-size: cover; */
+        background-color: gray;
+        width: 7px;
+        height: 7px;
+        /* border: 2px solid green; */
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .mapboxgl-popup {
+        max-width: 200px;
+    }
+
+    .mapboxgl-popup-content {
+        text-align: center;
+        font-family: 'Open Sans', sans-serif;
+    }
+</style>
+
 <div class="patrol-index-page">
     <div class="row">
         <div class="col-md-8">

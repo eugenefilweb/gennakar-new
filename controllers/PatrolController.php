@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\StringHelper;
 use Yii;
 use app\helpers\App;
 use app\helpers\Html;
@@ -259,24 +260,12 @@ class PatrolController extends Controller
 
     public function actionMap()
     {
-
         $searchModel = new PatrolSearch([
             'searchAction' => ['patrol/map']
         ]);
         $queryParams = App::queryParams();
         $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
         $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
-
-        // // Yii::$app->session->set('query', $queryParams);
-        // // print_r(Yii::$app->session->get('query'));
-        // // die;
-
-        // // Yii::$app->session->remove('query');
-        // // print_r($dataProvider);
-        // print_r($dataProvider->models);
-        // // print_r($queryParams);s
-        // die;
-
 
         $coordinates = App::foreach($dataProvider->models, function ($model) use($searchModel) {
             $data = App::foreach(array_values($model->coordinates), function($d) use($model, $searchModel) {
@@ -308,37 +297,80 @@ class PatrolController extends Controller
             return $data;
         }, false);
 
-        // Yii::$app->session->set('coordinates', $coordinates);
-        // print_r(Yii::$app->session->get('coordinates'));
-        // // Yii::$app->session->remove('query');
-        // die;
+        // foreach ($coordinates as $key1 => $value1) {
+        //     foreach ($value1 as $key2 => $innerValue) {
+        //         $description = $innerValue['description'];
 
+        //         $startPos = strpos($description, '<strong>');
+        //         $endPos = strpos($description, '</strong>');
+                
+        //         if ($startPos !== false && $endPos !== false) {
+        //             $patrollerText = substr($description, $startPos + 8, $endPos - $startPos - 8);
+        //             $coordinates[$key1][$key2]['user_label'] = $patrollerText;
+        //         }
+
+        //         $colonPos = strpos($description, ': ');
+        //         $brPos = strpos($description, '<br>');
+        
+        //         if ($colonPos !== false && $brPos !== false) {
+        //             // Extract the text between ": " and "<br>"
+        //             $firstOccurrence = substr($description, $colonPos + 2, $brPos - $colonPos - 2);
+        //             $coordinates[$key1][$key2]['user'] = $firstOccurrence;
+        //         }
+        //     }
+        // }
+        
+        foreach ($coordinates as &$coordinate) {
+            foreach ($coordinate as &$data) {
+                $description = $data['description'];
+
+                $userLabel = function($description){
+                    return StringHelper::extractTextBetweenStrings($description, '<strong>', '</strong>');
+                };
+
+                $user = function($description){
+                    return StringHelper::extractTextBetweenStrings($description, ': ', '<br>');
+                };
+        
+                if ($userLabel($description) !== false) {
+                    $data['user_label'] = $userLabel($description);
+                };
+
+                if ($user($description) !== false) {
+                    $data['user'] = $user($description);
+                };
+            }
+        };
+
+  
+        
         return $this->render('map', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'coordinates' => $coordinates,
         ]);
-
+            
     }
-
+        
     public function actionValidate($id)
     {
         $model = Patrol::controllerFind($id);
         $model->status = Patrol::VALIDATED;
-
+        
         if($model->save()) {
             App::success('Successfully Vlidated');
         }
         else {
             App::danger(json_encode($model->errors));
         }
-
+        
         return $this->redirect(App::referrer());
     }
 
 
-    public function actionTestMap(){
-
+    public function actionTestMap()
+    {
+        
         return $this->render('test-map');
     }
 }

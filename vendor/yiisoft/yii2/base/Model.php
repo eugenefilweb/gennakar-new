@@ -865,6 +865,21 @@ class Model extends Component implements StaticInstanceInterface, IteratorAggreg
      * If not set, [[formName()]] is used.
      * @return bool whether `load()` found the expected form in `$data`.
      */
+    // public function load($data, $formName = null)
+    // {
+    //     $scope = $formName === null ? $this->formName() : $formName;
+    //     if ($scope === '' && !empty($data)) {
+    //         $this->setAttributes($data);
+
+    //         return true;
+    //     } elseif (isset($data[$scope])) {
+    //         $this->setAttributes($data[$scope]);
+
+    //         return true;
+    //     }
+
+    //     return false;
+    // }
     public function load($data, $formName = null)
     {
         $scope = $formName === null ? $this->formName() : $formName;
@@ -880,6 +895,8 @@ class Model extends Component implements StaticInstanceInterface, IteratorAggreg
 
         return false;
     }
+
+
 
     /**
      * Populates a set of models with the data from end user.

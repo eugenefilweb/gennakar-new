@@ -388,15 +388,15 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
     function loadDirections() {
 
     // Add each coordinate as a waypoint
-    for (var i = 0; i < waypoints.length; i++) {
-        waypointsArray.push(waypoints[i]);
+    for (var i = 0; i < waypoints1.length; i++) {
+        waypointsArray.push(waypoints1[i]);
     }
 
-    // Set the waypoints in the Directions control
-    directions.setWaypoints(waypointsArray);
+    // // Set the waypoints in the Directions control
+    // directions.setWaypoints(waypointsArray);
 
-    // Trigger route calculation
-    directions.route();
+    // // Trigger route calculation
+    // directions.route();
 
       for (let i = 0; i < waypoints1.length; i++) {
         if (i === 0) {

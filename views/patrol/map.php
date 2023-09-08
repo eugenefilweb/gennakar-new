@@ -29,35 +29,6 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
 $waypoints = call_user_func_array('array_merge', $coordinates);
 ?>
 
-<style>
-    /* #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-    } */
-
-    .marker {
-        /* background-image: url('https://freepngimg.com/thumb/map/66932-openstreetmap-map-google-icons-maps-computer-marker.png'); */
-        /* background-size: cover; */
-        background-color: gray;
-        width: 7px;
-        height: 7px;
-        /* border: 2px solid green; */
-        border-radius: 50%;
-        cursor: pointer;
-    }
-
-    .mapboxgl-popup {
-        max-width: 200px;
-    }
-
-    .mapboxgl-popup-content {
-        text-align: center;
-        font-family: 'Open Sans', sans-serif;
-    }
-</style>
-
 <div class="patrol-index-page">
     <div class="row">
         <div class="col-md-8">
@@ -77,9 +48,9 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
                     'withSearch' => false,
                     'withLine' => true,
                     'zoom' => $searchModel->map_zoom_level
-                ]) */?>
+                ]) */ ?>
                 
-                <div id="map" style="height: 500px;"></div>
+                <div id="map" style="height: 100%;"></div>
                 
 
             <?php $this->endContent() ?>
@@ -153,42 +124,41 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
   mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
 
   const waypoints = <?=json_encode($waypoints) ?>;
-  let waypointsArray = <?=json_encode($coordinates) ?>;
-  console.log(waypointsArray);
-  const endpoints = [];
+  const waypointsLatLng = waypoints.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
+  const waypointsArray = <?=json_encode($coordinates) ?>;
 
-  const waypointsList = [];
-  const features = []; // Initialize an empty array to hold features
-  let bounds = new mapboxgl.LngLatBounds(); // Create bounds object to store map extent
+  const endpoints = waypointsArray.flatMap(waypointCoords => [
+    waypointCoords[0],
+    waypointCoords[waypointCoords.length - 1]
+  ]);
 
-  for (const waypointCoords of waypointsArray) {
-    endpoints.push(waypointCoords[0]);
-    endpoints.push(waypointCoords[waypointCoords.length - 1]);
+  const waypointsList = waypointsArray.map(waypointCoords =>
+    waypointCoords.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)])
+  );
 
-    const waypoint = waypointCoords.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
-    waypointsList.push(waypoint);
-
-    // Extend the bounds with the current coordinates
-    for (const coord of waypoint) {
-      bounds.extend(coord);
+  const featuresRoutes = waypointsList.map(waypoint => ({
+    'type': 'Feature',
+    'properties': {
+      'color': '#33C9EB' // blue
+    },
+    'geometry': {
+      'type': 'LineString',
+      'coordinates': waypoint
     }
-  }
+  }));
 
-  for (const waypoint of waypointsList) {
-    const waypointFeature = {
+  const featuresPlaces = waypointsLatLng.map(waypoint => (
+    {
       'type': 'Feature',
       'properties': {
-        'color': '#33C9EB' // blue
+        'description': `Lng: ${waypoint[0]},Lat: ${waypoint[1]}`
       },
       'geometry': {
-        'type': 'LineString',
+        'type': 'Point',
         'coordinates': waypoint
       }
     }
-
-    // Add the waypoint feature to the features array
-    features.push(waypointFeature);
-  }
+  ));
 
   const map1 = new mapboxgl.Map({
     container: 'map',
@@ -202,7 +172,15 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
       'type': 'geojson',
       'data': {
         'type': 'FeatureCollection',
-        'features': features
+        'features': featuresRoutes
+      }
+    });
+
+    map1.addSource('places', {
+      'type': 'geojson',
+      'data': {
+        'type': 'FeatureCollection',
+        'features': featuresPlaces
       }
     });
 
@@ -216,64 +194,56 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
       }
     });
 
-    const geojson = {
-      'type': 'FeatureCollection',
-      'features': []
-    };
+    map1.addLayer({
+      'id': 'places',
+      'type': 'circle',
+      'source': 'places',
+      'paint': {
+      'circle-color': '#4264fb',
+      'circle-radius': 3,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#ffffff'
+      }
+    });
 
-    for (const waypoint of waypoints) {
-      geojson.features.push({
-        'type': 'Feature',
-        'geometry': {
-          'type': 'Point',
-          'coordinates': waypoint
-        },
-        'properties': {
-          'title': 'Mapbox',
-          'description': 'Washington, D.C.'
-        }
-      });
-    }
-
-    // add markers to map
-    for (const feature of geojson.features) {
-      // create an HTML element for each feature
-      const el = document.createElement('div');
-      el.className = 'marker';
-
-      // make a marker for each feature and add it to the map
-      new mapboxgl.Marker(el).setLngLat(feature.geometry.coordinates).setPopup(new mapboxgl.Popup({
-        offset: 25
-      }).setHTML(`<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`)).addTo(map1);
-    }
-
-    // Add markers with rotation based on bearing
     for (let i = 0; i < endpoints.length; i++) {
-      const feature = {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: endpoints[i]
-        },
-        properties: {
-          title: 'Mapbox',
-          description: 'Washington, D.C.'
-        }
-      };
 
-      const rotation = 0;
+      new mapboxgl.Marker()
+      .setLngLat(endpoints[i])
+      .setPopup(new mapboxgl.Popup()
+      .setHTML(`<h1>${endpoints[i].user.toUpperCase()}</h1>`))
+      .addTo(map1);
 
-      new mapboxgl.Marker({
-        rotation: rotation
-      }).setLngLat(feature.geometry.coordinates).setPopup(new mapboxgl.Popup({
-        offset: 25
-      }).setHTML(`<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`)).addTo(map1);
+      // new mapboxgl.Popup()
+      // .setLngLat(endpoints[i])
+      // .setHTML(`<h1>${endpoints[i].user.toUpperCase()}</h1>`)
+      // .addTo(map1);
+
     }
 
-    // Set the map's center and zoom level to fit the extent
-    // map1.fitBounds(bounds, {
-    //   padding: 50, // You can adjust the padding as needed
+    // const popup = new mapboxgl.Popup({
+    //   closeButton: false,
+    //   closeOnClick: false
     // });
+
+    // map1.on('mouseenter', 'places', (e) => {
+    //   map1.getCanvas().style.cursor = 'pointer';
+      
+    //   const coordinates = e.features[0].geometry.coordinates.slice();
+    //   const description = e.features[0].properties.description;
+      
+    //   while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+    //   coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    //   }
+    //   popup.setLngLat(coordinates).setHTML(description).addTo(map1);
+    // });
+    
+    // map1.on('mouseleave', 'places', () => {
+    //   map1.getCanvas().style.cursor = '';
+    //   popup.remove();
+    // });
+
   });
+  
 </script>
 

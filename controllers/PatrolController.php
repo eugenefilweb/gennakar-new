@@ -1,5 +1,6 @@
 <?php
 
+
 namespace app\controllers;
 
 use app\helpers\StringHelper;
@@ -267,6 +268,11 @@ class PatrolController extends Controller
         $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
         $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
 
+        // print_r($searchModel->{user_id});
+        // // print_r($searchModel);
+
+        // die;
+
         $coordinates = App::foreach($dataProvider->models, function ($model) use($searchModel) {
             $data = App::foreach(array_values($model->coordinates), function($d) use($model, $searchModel) {
                 $photo = Url::image($model->userPhoto, ['w' => 25]);
@@ -296,6 +302,7 @@ class PatrolController extends Controller
 
             return $data;
         }, false);
+
 
         // foreach ($coordinates as $key1 => $value1) {
         //     foreach ($value1 as $key2 => $innerValue) {
@@ -342,7 +349,34 @@ class PatrolController extends Controller
             }
         };
 
-  
+        
+        // foreach($coordinates as $key1 => $value1){
+        //     // ob_start();
+        //     foreach($value1 as $key2 => $value2){
+                
+        //         // print_r($value2['timestamp']);
+                
+        //         $timestamp = $value2['timestamp'];
+        //         if (strtotime($timestamp) === false) {
+        //             echo "Invalid timestamp: $timestamp\n";
+        //         } else {
+        //             echo "Valid timestamp: $timestamp\n";
+        //         }
+                
+        //     }
+        //     // return ob_get_clean();
+        // }
+        
+
+        //   die;
+
+
+        // $models = Patrol::find()
+        //     ->groupBy('user_id')
+        //     ->all();
+        //     print_r($models);
+
+        // die;
         
         return $this->render('map', [
             'searchModel' => $searchModel,
@@ -374,3 +408,4 @@ class PatrolController extends Controller
         return $this->render('test-map');
     }
 }
+

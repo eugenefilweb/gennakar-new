@@ -6,6 +6,7 @@ use app\widgets\Filter;
 $totalFilterTag = $searchModel->totalFilterTag($attribute);
 
 $options = $data ?? Patrol::filter($attribute);
+
 ?>
 
 <?php if ($options): ?>
@@ -18,7 +19,8 @@ $options = $data ?? Patrol::filter($attribute);
         </div>
         <div id="<?= $attribute ?>-container" class="collapse <?= $totalFilterTag ? 'show': '' ?>" >
             <div class="card-body">
-                <?= Filter::widget([
+                <?=
+                    Filter::widget([
                     'form' => $form,
                     'model' => $searchModel,
                     'attribute' => $attribute,

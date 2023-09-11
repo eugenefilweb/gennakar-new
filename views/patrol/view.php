@@ -97,7 +97,6 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
                 ]) */?>
 
 
-
             <?php $this->endContent() ?>
         </div>
         <div class="col-md-5">

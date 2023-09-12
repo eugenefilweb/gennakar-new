@@ -26,7 +26,6 @@ $this->params['headerButtons'] = $model->createButton;
 
 $this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css',['position' => View::POS_HEAD]);
 $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
-// $this->registerJsFile('https://js.sentry-cdn.com/9c5feb5b248b49f79a585804c259febc.min.js', ['crossorigin' => 'anonymous', 'position' => View::POS_HEAD]);
 $this->registerJsFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js', ['position' => View::POS_HEAD]);
 $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css',['position' => View::POS_HEAD]);
 
@@ -95,7 +94,6 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
                     // 'showCurrentLocation' => true,
                     'zoom' => 14
                 ]) */?>
-
 
             <?php $this->endContent() ?>
         </div>

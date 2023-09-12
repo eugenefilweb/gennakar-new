@@ -4,6 +4,7 @@
 namespace app\controllers;
 
 use app\helpers\StringHelper;
+use app\models\form\user\ProfileForm;
 use Yii;
 use app\helpers\App;
 use app\helpers\Html;
@@ -268,88 +269,88 @@ class PatrolController extends Controller
         $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
         $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
 
-        // print_r($searchModel->{user_id});
-        // // print_r($searchModel);
+        // $data = $dataProvider->models;
+        // $coordinates = [];
+        // $userIds = [];
+        // $userFullname = [];
 
-        // die;
-
-        $coordinates = App::foreach($dataProvider->models, function ($model) use($searchModel) {
-            $data = App::foreach(array_values($model->coordinates), function($d) use($model, $searchModel) {
-                $photo = Url::image($model->userPhoto, ['w' => 25]);
-
-                $d['description'] = <<< HTML
-                    <div> 
-                        <strong>Patroller</strong>: {$model->username}
-                        <br><strong>Latitude</strong>: {$d['lat']}
-                        <br><strong>Longitude</strong>: {$d['lon']}
-                    </div>
-                HTML;
-                if ($searchModel->show_user_photo == 0) {
-                    return $d;
-                }
-                $d['mapStartMarkerUrl'] = $photo;
-                $d['mapEndMarkerUrl'] = $photo;
-                return $d;
-            }, false);
-
-            if ($data) {
-                $data[0]['description'] = Html::tag('div', Html::tag('b', 'START OF PATROL')) . $data[0]['description'];
-
-                if (($length = count($data)) > 1) {
-                    $data[$length-1]['description'] = Html::tag('div', Html::tag('b', 'END OF PATROL')) . $data[$length-1]['description'];
-                }
-            }
-
-            return $data;
-        }, false);
+        // foreach($dataProvider->models as $key1 => $value1){
+        //     $userId = $value1->user_id;
+        //     $profile = new ProfileForm(['user_id'=> $userId]);
+        //     $userFullname[] = $profile->getFullname();
+        // }
 
 
-        // foreach ($coordinates as $key1 => $value1) {
-        //     foreach ($value1 as $key2 => $innerValue) {
-        //         $description = $innerValue['description'];
+        // foreach($data as $key => $value){
+        //     $coordinatesArray = $value->attributes['coordinates'];
+        //     $coordinates[] = $coordinatesArray;
+        //     $userIds[] = $value->user_id;
+        // }
 
-        //         $startPos = strpos($description, '<strong>');
-        //         $endPos = strpos($description, '</strong>');
-                
-        //         if ($startPos !== false && $endPos !== false) {
-        //             $patrollerText = substr($description, $startPos + 8, $endPos - $startPos - 8);
-        //             $coordinates[$key1][$key2]['user_label'] = $patrollerText;
+        // $i = 0; 
+        // foreach ($coordinates as &$coordinate) {
+        //     $user_id = $userIds[$i];
+        //     $user_fullName = $userFullname[$i];
+
+        //     foreach ($coordinate as &$data) {
+        //         $data['user_id'] = $user_id;
+        //         $data['full_name'] = $user_fullName;
+        //     }
+        //     $i++; 
+        // }
+
+        $data = $dataProvider->models;
+        $coordinates = [];
+
+        foreach ($data as $value) {
+            $user_id = $value->user_id;
+            $profile = new ProfileForm(['user_id' => $user_id]);
+            $user_fullName = $profile->getFullname();
+
+            $coordinatesArray = $value->attributes['coordinates'];
+            $userCoordinates = array_map(function ($coordinate) use ($user_id, $user_fullName) {
+                $coordinate['user_id'] = $user_id;
+                $coordinate['full_name'] = $user_fullName;
+                return $coordinate;
+            }, $coordinatesArray);
+
+            $coordinates[] = $userCoordinates;
+        }
+
+        // $coordinates = App::foreach($dataProvider->models, function ($model) use($searchModel) {
+        //     $data = App::foreach(array_values($model->coordinates), function($d) use($model, $searchModel) {
+        //         $photo = Url::image($model->userPhoto, ['w' => 25]);
+        //         $timestamp = App::formatter()->asDateToTimezone(date('m/d/Y h:i:s A', ($d['timestamp'] / 1000)), 'm/d/Y h:i:s A');
+
+        //         $d['description'] = <<< HTML
+        //             <div> 
+        //                 <strong>Patroller</strong>: {$model->username}
+        //                 <br><strong>Latitude</strong>: {$d['lat']}
+        //                 <br><strong>Longitude</strong>: {$d['lon']}
+        //                 <br><strong>Timestamp</strong>: {$timestamp}
+        //             </div>
+        //         HTML;
+        //         if ($searchModel->show_user_photo == 0) {
+        //             return $d;
         //         }
+        //         $d['mapStartMarkerUrl'] = $photo;
+        //         $d['mapEndMarkerUrl'] = $photo;
 
-        //         $colonPos = strpos($description, ': ');
-        //         $brPos = strpos($description, '<br>');
-        
-        //         if ($colonPos !== false && $brPos !== false) {
-        //             // Extract the text between ": " and "<br>"
-        //             $firstOccurrence = substr($description, $colonPos + 2, $brPos - $colonPos - 2);
-        //             $coordinates[$key1][$key2]['user'] = $firstOccurrence;
+        //         $d['user_id'] = $model->user_id;
+        //         return $d;
+        //     }, false);
+
+        //     if ($data) {
+        //         $data[0]['description'] = Html::tag('div', Html::tag('b', 'START OF PATROL')) . $data[0]['description'];
+
+        //         if (($length = count($data)) > 1) {
+        //             $data[$length-1]['description'] = Html::tag('div', Html::tag('b', 'END OF PATROL')) . $data[$length-1]['description'];
         //         }
         //     }
-        // }
         
-        foreach ($coordinates as &$coordinate) {
-            foreach ($coordinate as &$data) {
-                $description = $data['description'];
+        //     return $data;
+        // }, false);
 
-                $userLabel = function($description){
-                    return StringHelper::extractTextBetweenStrings($description, '<strong>', '</strong>');
-                };
-
-                $user = function($description){
-                    return StringHelper::extractTextBetweenStrings($description, ': ', '<br>');
-                };
-        
-                if ($userLabel($description) !== false) {
-                    $data['user_label'] = $userLabel($description);
-                };
-
-                if ($user($description) !== false) {
-                    $data['user'] = $user($description);
-                };
-            }
-        };
-
-        
         // foreach($coordinates as $key1 => $value1){
         //     // ob_start();
         //     foreach($value1 as $key2 => $value2){
@@ -383,7 +384,7 @@ class PatrolController extends Controller
             'dataProvider' => $dataProvider,
             'coordinates' => $coordinates,
         ]);
-            
+        
     }
         
     public function actionValidate($id)

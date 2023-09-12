@@ -1,5 +1,6 @@
 <?php
 
+use app\widgets\MapboxGl;
 use \yii\data\Pagination;
 use app\helpers\App;
 use app\helpers\Html;
@@ -19,15 +20,12 @@ $this->params['searchModel'] = $searchModel;
 $this->params['activeMenuLink'] = '/patrol/map';
 $this->params['wrapCard'] = false;
 
-
 $this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
 $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
-
 $this->registerJsFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js', ['position' => View::POS_HEAD]);
 $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css',['position' => View::POS_HEAD]);
 
 $waypoints = call_user_func_array('array_merge', $coordinates);
-
 ?>
 
 <div class="patrol-index-page">
@@ -50,6 +48,8 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
                     'withLine' => true,
                     'zoom' => $searchModel->map_zoom_level
                 ]) */ ?>
+
+                
                 
                 <div id="map" style="height: 100%;"></div>
                 
@@ -65,25 +65,20 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
                     <div class="scroll scroll-pull" data-scroll="true" data-wheel-propagation="true" style="height: 60vh">
                         <div class="accordion accordion-solid accordion-toggle-plus" id="accordion-filter">
 
-                            <?=
-                            App::foreach($searchModel->advancedFilterAttributes, fn ($attribute) => $this->render('_map-advanced-filter', [
+                            <?= App::foreach($searchModel->advancedFilterAttributes, fn ($attribute) => $this->render('_map-advanced-filter', [
                                 'form' => $form,
                                 'searchModel' => $searchModel,
                                 'attribute' => $attribute
-                            ])) 
-                            ?>
+                            ])) ?>
 
-                            <?= 
-                            $this->render('_map-advanced-filter', [
+                            <?= $this->render('_map-advanced-filter', [
                                 'form' => $form,
                                 'searchModel' => $searchModel,
                                 'attribute' => 'user_id',
                                 'data' => Patrol::userFilter()
-                            ]) 
-                            ?>
+                            ]) ?>
 
-                            <?= 
-                            $this->render('_map-advanced-filter', [
+                            <?= $this->render('_map-advanced-filter', [
                                 'form' => $form,
                                 'searchModel' => $searchModel,
                                 'attribute' => 'status',
@@ -91,8 +86,7 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
                                     Patrol::VALIDATED => 'Validated',
                                     Patrol::FOR_VALIDATION => 'For Validation',
                                 ]
-                            ]) 
-                            ?>
+                            ]) ?>
 
                             <div class="checkbox-inline">
                                 <label class="checkbox">
@@ -133,20 +127,22 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
   const waypoints = <?=json_encode($waypoints) ?>;
   const waypointsLatLng = waypoints.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
   const waypointsArray = <?=json_encode($coordinates) ?>;
-
+  
   const endpoints = waypointsArray.flatMap(waypointCoords => [
     waypointCoords[0],
     waypointCoords[waypointCoords.length - 1]
   ]);
+
 
   const formattedTimestamps = endpoints.map(endpoint => {
   const timestamp = parseInt(endpoint.timestamp);
 
   if (isNaN(timestamp)) {
     // console.error(`Invalid timestamp: ${endpoint.timestamp}`);
-    return "Invalid Date"; // Or any other default value or error handling you prefer
+    return ""; 
   }
 
+  
   const date = new Date(timestamp);
 
   const options = {
@@ -162,22 +158,20 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
   return new Intl.DateTimeFormat('en-US', options).format(date);
 });
 
-// console.log(formattedEndpoints);
-
   const waypointsList = waypointsArray.map(waypointCoords =>
     waypointCoords.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)])
   );
 
-  const featuresRoutes = waypointsList.map(waypoint => ({
-    'type': 'Feature',
-    'properties': {
-      'color': '#33C9EB' // blue
-    },
-    'geometry': {
-      'type': 'LineString',
-      'coordinates': waypoint
-    }
-  }));
+    const featuresRoutes = waypointsList.map(waypoint => ({
+      'type': 'Feature',
+      'properties': {
+        'color': '#33C9EB' // blue
+      },
+      'geometry': {
+        'type': 'LineString',
+        'coordinates': waypoint
+      }
+    }));
 
   const featuresPlaces = waypointsLatLng.map(waypoint => (
     {
@@ -238,19 +232,19 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
       }
     });
 
+
     for (let i = 0; i < endpoints.length; i++) {
 
       new mapboxgl.Marker()
       .setLngLat(endpoints[i])
       .setPopup(new mapboxgl.Popup()
-      .setHTML(`<h3>${endpoints[i].user.toUpperCase()}</h3><div>${formattedTimestamps[i]}</div>`))
+      .setHTML(`
+        <div class="m-1" style="background-color: #ffffff;">
+          <h3 class="text-center"">${endpoints[i].full_name.toUpperCase()}</h3>
+          <div>${formattedTimestamps[i]}</div>
+        </div>
+      `))
       .addTo(map1);
-
-      // new mapboxgl.Popup()
-      // .setLngLat(endpoints[i])
-      // .setHTML(`<h1>${endpoints[i].user.toUpperCase()}</h1>`)
-      // .addTo(map1);
-
     }
 
     // const popup = new mapboxgl.Popup({

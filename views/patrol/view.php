@@ -38,25 +38,38 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
         bottom: 0;
         width: 100%;
     } */
-        .marker {
-        /* background-image: url('https://freepngimg.com/thumb/map/66932-openstreetmap-map-google-icons-maps-computer-marker.png'); */
-        /* background-size: cover; */
+    /* .marker {
+        background-image: url('https://freepngimg.com/thumb/map/66932-openstreetmap-map-google-icons-maps-computer-marker.png');
+        background-size: cover;
         background-color: gray;
         width: 7px;
         height: 7px;
-        /* border: 2px solid green; */
+        border: 2px solid green;
         border-radius: 50%;
         cursor: pointer;
-    }
+    } */
 
-    .mapboxgl-popup {
+    /* .mapboxgl-popup {
         max-width: 200px;
     }
 
     .mapboxgl-popup-content {
         text-align: center;
         font-family: 'Open Sans', sans-serif;
+    } */
+
+
+    .mapbox-marker {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        cursor: pointer;
+        background-color: #3bb2d0;
+        border: 2px solid #fff;
     }
+
+
+
 </style>
 
 <div class="patrol-view-page">
@@ -343,7 +356,7 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
 		});
 
     function extractProportionalItems(items, numberOfItemsToExtract=25) {
-        const extractedItems = [items[0]]; // Include the first item
+        const extractedItems = [items[0]]; 
         const extractedItemsIndex = [0];
 
         if (numberOfItemsToExtract > 2) {
@@ -356,44 +369,37 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
         }
         }
 
-        extractedItems.push(items[items.length - 1]); // Include the last item
-        extractedItemsIndex.push(items.length - 1); // Include the last item
+        extractedItems.push(items[items.length - 1]); 
+        extractedItemsIndex.push(items.length - 1);
 
         return extractedItems;
     }
 
-    // const items = [...]; // Your array of 100 items here
     const numberOfItemsToExtract = 25;
     waypoints1 = extractProportionalItems(waypoints1, numberOfItemsToExtract);
 
-    const waypointsCount = waypoints1.length;
-    const waypointsMiddle = Math.floor(waypointsCount / 2);
-    waypoints1 = [waypoints1[0], waypoints1[waypointsMiddle-1], waypoints1[waypointsCount - 1]];
+    // const waypointsCount = waypoints1.length;
+    // const waypointsMiddle = Math.floor(waypointsCount / 2);
+    // waypoints1 = [waypoints1[0], waypoints1[waypointsMiddle-1], waypoints1[waypointsCount - 1]];
 
-    // Add the Mapbox Directions control
-    const directions = new MapboxDirections({
+     const directions = new MapboxDirections({
         accessToken: mapboxgl.accessToken,
-        unit: 'metric',                  // Choose the unit for distance ('imperial' or 'metric')
-        profile: 'mapbox/driving',       // Choose the profile for directions (e.g., 'mapbox/driving', 'mapbox/cycling')
-        alternatives: false,             // Show alternative routes (true/false)
-        controls: { inputs: false, instructions: false }, // Configure control elements
-        interactive: true                // Enable user interaction with the map
+        unit: 'metric',                  
+        profile: 'mapbox/walking',
+        // geometries: 'polyline6',
+        geometries: 'geojson',        
+        alternatives: false,             
+        controls: { inputs: false, instructions: false }, 
+        interactive: true                
     });
 
     map1.addControl(directions, 'top-left');
 
     function loadDirections() {
 
-    // Add each coordinate as a waypoint
     for (var i = 0; i < waypoints1.length; i++) {
         waypointsArray.push(waypoints1[i]);
     }
-
-    // // Set the waypoints in the Directions control
-    // directions.setWaypoints(waypointsArray);
-
-    // // Trigger route calculation
-    // directions.route();
 
       for (let i = 0; i < waypoints1.length; i++) {
         if (i === 0) {
@@ -406,8 +412,76 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
       }
     }
 
-    map1.on('load',  function() {
-      loadDirections();
-    });
+    const featuresPlaces = waypoints1.map(waypoint => (
+    {
+      'type': 'Feature',
+      'properties': {
+        'description': `Lng: ${waypoint[0]},Lat: ${waypoint[1]}`
+      },
+      'geometry': {
+        'type': 'Point',
+        'coordinates': waypoint
+      }
+    }
+  ));
+
+
+  map1.on('load', function () {
+    loadDirections();
+
+    // Add markers for intermediate waypoints
+    for (let i = 1; i < waypoints1.length - 1; i++) {
+        const markerElement = createMarker(waypoints1[i], 0); // Lower zIndex (e.g., -500)
+        new mapboxgl.Marker({ element: markerElement }).setLngLat([waypoints1[i][0], waypoints1[i][1]]).addTo(map1);
+    }
+
+    // Add endpoint markers (A and B) with separate markerEndpoint elements
+    const markerA = createEndpointMarker(waypoints1[0], 1000, 'A'); // Higher zIndex (e.g., 1000) for markerA
+    const markerB = createEndpointMarker(waypoints1[waypoints1.length - 1], 1000, 'B'); // Higher zIndex (e.g., 1000) for markerB
+
+    // Helper function to create a marker element with a specific zIndex
+    function createMarker(coordinates, zIndex) {
+        const markerElement = document.createElement('div');
+        markerElement.className = 'mapboxgl-marker';
+
+        markerElement.style.width = '15px';
+        markerElement.style.height = '15px';
+        markerElement.style.borderRadius = '50%';
+        markerElement.style.border = '2px solid #fff';
+        markerElement.style.backgroundColor = '#3bb2d0';
+        markerElement.style.zIndex = zIndex + '';
+
+        return markerElement;
+    }
+
+    // Helper function to create an endpoint marker element with a specific zIndex
+    function createEndpointMarker(coordinates, zIndex, endpoint) {
+        const markerEndpoint = document.createElement('div');
+        markerEndpoint.className = 'mapboxgl-marker';
+
+        markerEndpoint.style.background = endpoint === 'A' ? '#3BB2D0' :'#8a8bc9';
+        markerEndpoint.style.width = '36px';
+        markerEndpoint.style.height = '36px';
+        markerEndpoint.style.borderRadius = '50%';
+        markerEndpoint.style.zIndex = zIndex + '';
+        markerEndpoint.style.display = 'flex';
+        markerEndpoint.style.justifyContent = 'center';
+        markerEndpoint.style.alignItems = 'center';
+        
+
+        new mapboxgl.Marker({ element: markerEndpoint }).setLngLat(coordinates).addTo(map1);
+
+        markerEndpoint.innerHTML = `<div style="color: #fff; font-size: 12px;">${endpoint}</div>`
+
+        return markerEndpoint;
+    }
+
+    // Add endpoint markers (A and B) to the map
+    new mapboxgl.Marker({ element: markerA }).setLngLat([waypoints1[0][0], waypoints1[0][1]]).addTo(map1);
+    new mapboxgl.Marker({ element: markerB }).setLngLat([waypoints1[waypoints1.length - 1][0], waypoints1[waypoints1.length - 1][1]]).addTo(map1);
+});
+
+
+
 </script>
 

@@ -641,8 +641,7 @@ class MapboxWidget {
     }
 
 
-
-
+    
     init(){
 
         this.map.load('on', ()=> {

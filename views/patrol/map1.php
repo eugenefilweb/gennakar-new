@@ -50,8 +50,6 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
                 ]) */ ?>
 
                 <div id="map" style="height: 100%;"></div>
-
-                <?= MapboxGl::widget([]) ?>
                 
             <?php $this->endContent() ?>
             
@@ -299,21 +297,22 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
         </div>
       `;
 
-  new mapboxgl.Marker({
-    element: markerElement,
-    })
-      .setLngLat(endpoints[i])
-      .setPopup(
-        new mapboxgl.Popup().setHTML(`
-          <div class="m-1" style="background-color: #ffffff;">
-            <h3 class="text-center">${endpoints[i].full_name.toUpperCase()}</h3>
-            <div>${formattedTimestamps[i]}</div>
-          </div>
-        `)
-      )
-      .addTo(map1);
-  }
-});
+      new mapboxgl.Marker({
+        element: markerElement,
+      })
+        .setLngLat(endpoints[i])
+        .setPopup(
+          new mapboxgl.Popup().setHTML(`
+            <div class="m-1" style="background-color: #ffffff;">
+              <h3 class="text-center">${endpoints[i].full_name.toUpperCase()}</h3>
+              <div>${formattedTimestamps[i]}</div>
+            </div>
+          `)
+        )
+        .addTo(map1);
+    }
+
+  });
   
 </script>
 

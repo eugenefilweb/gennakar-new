@@ -265,9 +265,14 @@ class PatrolController extends Controller
         $searchModel = new PatrolSearch([
             'searchAction' => ['patrol/map']
         ]);
+
+
         $queryParams = App::queryParams();
         $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
         $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
+
+        // $sql = $dataProvider->query->createCommand()->getRawSql();
+        // Raw SQL Query: SELECT `p`.* FROM `tbl_patrols` `p` LEFT JOIN `tbl_users` `u` ON `p`.`user_id` = `u`.`id`
 
         // $data = $dataProvider->models;
         // $coordinates = [];
@@ -298,7 +303,7 @@ class PatrolController extends Controller
         //     }
         //     $i++; 
         // }
-
+        
         $data = $dataProvider->models;
         $coordinates = [];
 
@@ -308,13 +313,18 @@ class PatrolController extends Controller
             $user_fullName = $profile->getFullname();
 
             $coordinatesArray = $value->attributes['coordinates'];
+        
             $userCoordinates = array_map(function ($coordinate) use ($user_id, $user_fullName) {
                 $coordinate['user_id'] = $user_id;
                 $coordinate['full_name'] = $user_fullName;
                 return $coordinate;
             }, $coordinatesArray);
 
-            $coordinates[] = $userCoordinates;
+
+            // $coordinates[] = $userCoordinates;
+            if (!empty($userCoordinates)) {
+                $coordinates[] = $userCoordinates;
+            }
         }
 
         // $coordinates = App::foreach($dataProvider->models, function ($model) use($searchModel) {

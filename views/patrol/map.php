@@ -50,8 +50,6 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
                 ]) */ ?>
 
                 <div id="map" style="height: 100%;"></div>
-
-                <?= MapboxGl::widget([]) ?>
                 
             <?php $this->endContent() ?>
             
@@ -126,39 +124,48 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
   const waypoints = <?=json_encode($waypoints) ?>;
   const waypointsLatLng = waypoints.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
   const waypointsArray = <?=json_encode($coordinates) ?>;
+
   const waypointsList = waypointsArray.map(waypointCoords =>
     waypointCoords.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)])
   );
-  
-  const endpoints = waypointsArray.flatMap(waypointCoords => [
-    waypointCoords[0],
-    waypointCoords[waypointCoords.length - 1]
-  ]);
 
-
-  const formattedTimestamps = endpoints.map(endpoint => {
-    const timestamp = parseInt(endpoint.timestamp);
-
-    if (isNaN(timestamp)) {
-      // console.error(`Invalid timestamp: ${endpoint.timestamp}`);
-      return ""; 
+  const endpoints = waypointsArray.flatMap(waypointCoords => {
+      if(waypointCoords.length > 1){
+        return [waypointCoords[0],waypointCoords[waypointCoords.length - 1]];
+      }
+      return [waypointCoords[0]];
     }
+  );
 
-    
-    const date = new Date(timestamp);
+  const formattedTimestamps = endpoints.map(endpoint => { 
 
-    const options = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
-      hour12: true, // Use 12-hour format with AM/PM indicator
-    };
+      let timestamp = null;
 
-    return new Intl.DateTimeFormat('en-US', options).format(date);
-});
+      if(endpoint.timestamp){
+        timestamp = parseInt(endpoint.timestamp);
+      }
+
+      if (isNaN(timestamp)) {
+        // console.error(`Invalid timestamp: ${endpoint.timestamp}`);
+        return null; 
+      }
+
+      
+      const date = new Date(timestamp);
+
+      const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: true, // Use 12-hour format with AM/PM indicator
+      };
+
+      return new Intl.DateTimeFormat('en-US', options).format(date);
+  });
+
 
 
 // endpoints.forEach((endpoint, i) => {
@@ -201,7 +208,7 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
     {
       'type': 'Feature',
       'properties': {
-        'description': `Lng: ${waypoint[0]},Lat: ${waypoint[1]}`
+        'description': ``
       },
       'geometry': {
         'type': 'Point',
@@ -233,8 +240,6 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
         'features': featuresPlaces
       }
     });
-
-    
 
     map1.addLayer({
       'id': 'route-line-casing',
@@ -299,21 +304,22 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
         </div>
       `;
 
-  new mapboxgl.Marker({
-    element: markerElement,
-    })
-      .setLngLat(endpoints[i])
-      .setPopup(
-        new mapboxgl.Popup().setHTML(`
-          <div class="m-1" style="background-color: #ffffff;">
-            <h3 class="text-center">${endpoints[i].full_name.toUpperCase()}</h3>
-            <div>${formattedTimestamps[i]}</div>
-          </div>
-        `)
-      )
-      .addTo(map1);
-  }
-});
+      new mapboxgl.Marker({
+        element: markerElement,
+      })
+        .setLngLat(endpoints[i])
+        .setPopup(
+          new mapboxgl.Popup().setHTML(`
+            <div class="m-1" style="background-color: #ffffff;">
+              <h3 class="text-center">${endpoints[i].full_name.toUpperCase()}</h3>
+              <div>${formattedTimestamps[i]}</div>
+            </div>
+          `)
+        )
+        .addTo(map1);
+    }
+
+  });
   
 </script>
 

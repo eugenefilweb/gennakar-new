@@ -4,7 +4,7 @@ namespace app\widgets;
 
 use app\helpers\Url;
 
-class MapboxGl extends BaseWidget
+class Mapboxgl extends BaseWidget
 {
     public $access_token = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
     public $height = '100%';

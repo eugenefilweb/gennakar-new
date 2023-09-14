@@ -40,7 +40,7 @@ class PatrolSearch extends Patrol
 
     public function init()
     {
-        $this->pagination = App::setting('system')->pagination;
+        // $this->pagination = App::setting('system')->pagination;
     }
 
     /**

@@ -1,0 +1,13 @@
+class MapboxWidget{
+
+  constructor({
+
+  })
+  {
+
+  }
+
+  init(){
+    
+  }
+}

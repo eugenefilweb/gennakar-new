@@ -40,7 +40,7 @@ class PatrolSearch extends Patrol
 
     public function init()
     {
-        // $this->pagination = App::setting('system')->pagination;
+        $this->pagination = App::setting('system')->pagination;
     }
 
     /**
@@ -67,7 +67,6 @@ class PatrolSearch extends Patrol
 
         // add conditions that should always apply here
         $this->load($params);
-        // $this->loadMultiple($params);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

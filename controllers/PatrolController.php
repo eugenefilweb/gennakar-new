@@ -67,10 +67,22 @@ class PatrolController extends Controller
         $dataProvider = $searchModel->search(['TreeSearch' => $queryParams]);
         $dataProvider->query->andWhere(['patrol_id' => $model->id]);
 
+        $data = $dataProvider->models;
+        $trees = [];
+        foreach($data as $key => $value){
+            $trees[$key]['common_name'] = $value->common_name;
+            $trees[$key]['id'] = $value->id;
+            $trees[$key]['date_encoded'] = $value->date_encoded;
+            $trees[$key]['latitude'] = $value->latitude;
+            $trees[$key]['longitude'] = $value->longitude;
+            $trees[$key]['patrol_id'] = $value->patrol_id;
+        }
+
         return $this->render('view', [
             'model' => $model,
             'dataProvider' => $dataProvider,
-            'searchModel' => $searchModel
+            'searchModel' => $searchModel,
+            'trees' => $trees
         ]);
     }
 
@@ -307,6 +319,9 @@ class PatrolController extends Controller
         $data = $dataProvider->models;
         $coordinates = [];
 
+        // print_r($data);
+        // die;
+
         foreach ($data as $value) {
             $user_id = $value->user_id;
             $profile = new ProfileForm(['user_id' => $user_id]);
@@ -417,6 +432,12 @@ class PatrolController extends Controller
     {
         
         return $this->render('test-map');
+    }
+
+
+    public function actionAjax(){
+
+        return $this->renderAjax('mapbox');
     }
 }
 

@@ -39,16 +39,6 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
                 'stretch' => true
             ]) ?>
 
-                <?php /* OpenLayer::widget([
-                    'multipleCoordinates' => $coordinates,
-                    'addStartMarker' => true,
-                    'addEndMarker' => true,
-                    'addMarkers' => false,
-                    'withSearch' => false,
-                    'withLine' => true,
-                    'zoom' => $searchModel->map_zoom_level
-                ]) */ ?>
-
                 <div id="map" style="height: 100%;"></div>
                 
             <?php $this->endContent() ?>
@@ -129,80 +119,57 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
     waypointCoords.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)])
   );
 
-  const endpoints = waypointsArray.flatMap(waypointCoords => {
-      if(waypointCoords.length > 1){
-        return [waypointCoords[0],waypointCoords[waypointCoords.length - 1]];
-      }
-      return [waypointCoords[0]];
+  const endpoints = waypointsArray.map(coords => {
+    if(coords.length > 1){
+      return [coords[0], coords[coords.length - 1]];
     }
-  );
+    return [coords[0]];
+  })
 
-  const formattedTimestamps = endpoints.map(endpoint => { 
+  const formattedTimestamps = (point) => {
 
-      let timestamp = null;
+    let timestamp = null;
 
-      if(endpoint.timestamp){
-        timestamp = parseInt(endpoint.timestamp);
-      }
+    if(point.timestamp){
+      timestamp = parseInt(point.timestamp);
+    }
 
-      if (isNaN(timestamp)) {
-        // console.error(`Invalid timestamp: ${endpoint.timestamp}`);
-        return null; 
-      }
+    if(isNaN(timestamp)){
+      return null;
+    }
 
-      
-      const date = new Date(timestamp);
+    const date = new Date(timestamp);
 
-      const options = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-        hour12: true, // Use 12-hour format with AM/PM indicator
-      };
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true,
+    }
 
-      return new Intl.DateTimeFormat('en-US', options).format(date);
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+  }
+
+  for (let i = 0; i < endpoints.length; i++) {
+  endpoints[i].forEach(endpoint => {
+    endpoint['formattedTimestamp'] = formattedTimestamps(endpoint);
   });
+}
 
-
-
-// endpoints.forEach((endpoint, i) => {
-//         const timestamp = parseInt(endpoint.timestamp);
-//         const formattedTimestamp = isNaN(timestamp) ? "" : formatTimestamp(timestamp);
-
-//         endpoint.formattedTimestamp = formattedTimestamp;
-// });
-
-// formatTimestamp(timestamp) {
-//     const date = new Date(timestamp);
-
-//     const options = {
-//         year: 'numeric',
-//         month: 'long',
-//         day: 'numeric',
-//         hour: 'numeric',
-//         minute: 'numeric',
-//         second: 'numeric',
-//         hour12: true, // Use 12-hour format with AM/PM indicator
-//     };
-
-//     return new Intl.DateTimeFormat('en-US', options).format(date);
-// }
-
-
-    const featuresRoutes = waypointsList.map(waypoint => ({
-      'type': 'Feature',
-      'properties': {
-        // 'color': '#33C9EB' // blue
-        'color': '#4882c5'
-      },
-      'geometry': {
-        'type': 'LineString',
-        'coordinates': waypoint
-      }
-    }));
+  const featuresRoutes = waypointsList.map(waypoint => ({
+    'type': 'Feature',
+    'properties': {
+      // 'color': '#33C9EB' // blue
+      'color': '#4882c5'
+    },
+    'geometry': {
+      'type': 'LineString',
+      'coordinates': waypoint
+    }
+  }));
 
   const featuresPlaces = waypointsLatLng.map(waypoint => (
     {
@@ -282,41 +249,72 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
     });
 
     for (let i = 0; i < endpoints.length; i++) {
-      const markerElement = document.createElement('div');
-      markerElement.className = 'mapboxgl-marker';
 
-      // Add custom styling for the A and B markers
-      markerElement.style.background = i % 2 === 0 ? '#3BB2D0' : '#8a8bc9'; 
-      // markerElement.style.border = '2px solid #FFFFFF'; // White border
-      markerElement.style.width = '36px';
-      markerElement.style.height = '36px';
-      markerElement.style.borderRadius = '50%';
-      markerElement.style.display = 'flex';
-      markerElement.style.justifyContent = 'center';
-      markerElement.style.alignItems = 'center';
+      const createMarkerElement = (index) => {
+          const markerElement = document.createElement('div');
+          markerElement.className = 'mapboxgl-marker';
+          
+          markerElement.style.width = '36px';
+          markerElement.style.height = '36px';
+          markerElement.style.borderRadius = '50%';
+          markerElement.style.display = 'flex';
+          markerElement.style.justifyContent = 'center';
+          markerElement.style.alignItems = 'center';
 
-      const markerText = i % 2 === 0 ? 'A' : 'B'; // "A" for even indices, "B" for odd indices
+          markerElement.style.background = index === 0 ? '#3BB2D0' : '#8a8bc9'; 
 
-      markerElement.innerHTML = `
-        <div class="marker-text" 
-        style="color: #fff; font-size: 12px; font-family:['Open Sans Bold', 'Arial Unicode MS Bold']; margin:auto;">
-        ${markerText}
-        </div>
-      `;
+          const markerText = index === 0 ? 'A' : 'B';
 
-      new mapboxgl.Marker({
-        element: markerElement,
-      })
-        .setLngLat(endpoints[i])
-        .setPopup(
-          new mapboxgl.Popup().setHTML(`
-            <div class="m-1" style="background-color: #ffffff;">
-              <h3 class="text-center">${endpoints[i].full_name.toUpperCase()}</h3>
-              <div>${formattedTimestamps[i]}</div>
+          markerElement.innerHTML = `
+            <div class="marker-text" 
+            style="color: #fff; font-size: 12px; font-family:['Open Sans Bold', 'Arial Unicode MS Bold']; margin:auto;">
+            ${markerText}
             </div>
-          `)
-        )
-        .addTo(map1);
+          `;
+
+          return markerElement;
+      }
+
+        if(endpoints[i].length > 1){
+
+          for(let j = 0; j< endpoints[i].length; j++){
+
+            const markerElement = createMarkerElement(j);
+
+            new mapboxgl.Marker({
+              element: markerElement,
+            })
+            .setLngLat(endpoints[i][j])
+            .setPopup(
+              new mapboxgl.Popup().setHTML(`
+              <div class="m-1" style="background-color: #ffffff;">
+              <h3 class="text-center">${endpoints[i][j].full_name.toUpperCase()}</h3>
+              <div>${endpoints[i][j].formattedTimestamp}</div>
+              </div>
+              `)
+              )
+              .addTo(map1);
+
+          }
+
+        }else {
+
+          const markerElement = createMarkerElement(0);
+          new mapboxgl.Marker({
+            element: markerElement,
+          })
+          .setLngLat(endpoints[i][0])
+          .setPopup(
+            new mapboxgl.Popup().setHTML(`
+            <div class="m-1" style="background-color: #ffffff;">
+            <h3 class="text-center">${endpoints[i][0].full_name.toUpperCase()}</h3>
+            <div>${endpoints[i][0].formattedTimestamp}</div>
+            </div>
+            `)
+            )
+          .addTo(map1);
+
+        }
     }
 
   });

@@ -28,6 +28,7 @@ $this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox
 $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
 $this->registerJsFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js', ['position' => View::POS_HEAD]);
 $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css',['position' => View::POS_HEAD]);
+$treeSvg = Url::to(['@app/assets/media/svg/files/park-alt1.svg']);
 
 ?>
 <style>
@@ -226,126 +227,12 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
     </div>
 </div>
 
-<!-- <script>
-
-        var coordinates = <?= json_encode($model->formattedCoordinates) ?>;
-        let waypoints = coordinates.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
-
-        mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
-
-        const endpoints = [waypoints[0], waypoints[waypoints.length -1]];
-        const center = waypoints[Math.floor(waypoints.length/2) -1];
-
-        // Calculate the bounding box
-        const bounds = waypoints.reduce(function(bounds, coord) {
-            return bounds.extend(coord);
-        }, new mapboxgl.LngLatBounds(waypoints[0], waypoints[0]));
-
-        const map1 = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/streets-v12',
-            center: bounds.getCenter(),
-            zoom: 16
-        });
-
-        map1.on('load', () => {
-            map1.addSource('lines', {
-                'type': 'geojson',
-                'data': {
-                    'type': 'FeatureCollection',
-                    'features': [
-                        {
-                            'type': 'Feature',
-                            'properties': {
-                                // 'color': '#F7455D' // red
-                                'color': '#33C9EB' // blue
-                            },
-                            'geometry': {
-                                'type': 'LineString',
-                                'coordinates': waypoints
-                            }
-                        }
-                    ]
-                }
-            });
-
-            map1.addLayer({
-                'id': 'lines',
-                'type': 'line',
-                'source': 'lines',
-                'paint': {
-                    'line-width': 15,
-                    'line-color': ['get', 'color']
-                }
-            });
-        
-            const geojson = {
-            'type': 'FeatureCollection',
-            'features': []
-            };
-
-            for (const waypoint of waypoints) {
-            geojson.features.push({
-                'type': 'Feature',
-                'geometry': {
-                'type': 'Point',
-                'coordinates': waypoint
-                },
-                'properties': {
-                'title': 'Mapbox',
-                'description': 'Washington, D.C.'
-                }
-            });
-            }
-
-            // add markers to map
-            for (const feature of geojson.features) {
-            // create a HTML element for each feature
-            const el = document.createElement('div');
-            el.className = 'marker';
-
-            // make a marker for each feature and add it to the map
-            new mapboxgl.Marker(el).setLngLat(feature.geometry.coordinates).setPopup(new mapboxgl.Popup({
-                offset: 25
-            }) // add popups
-            .setHTML(` < h3 > $ {
-                feature.properties.title
-            } < /h3><p>${feature.properties.description}</p > `)).addTo(map1);
-            }
-
-            // Add markers with rotation based on bearing
-            for (let i = 0; i < endpoints.length; i++) {
-                const feature = {
-                    type: 'Feature',
-                    geometry: {
-                        type: 'Point',
-                        coordinates: endpoints[i]
-                    },
-                    properties: {
-                        title: 'Mapbox',
-                        description: 'Washington, D.C.'
-                    }
-                };
-
-                const rotation = 0;
-
-                new mapboxgl.Marker({ rotation: rotation })
-                    .setLngLat(feature.geometry.coordinates)
-                    .setPopup(new mapboxgl.Popup({
-                        offset: 25
-                    })
-                    .setHTML(`<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`))
-                    .addTo(map1);
-            }
-
-        });
-
-</script> -->
-
 <script>
     var coordinates = <?= json_encode($model->formattedCoordinates) ?>;
     let waypoints1 = coordinates.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
     var waypointsArray = [];
+    var dataProvider = <?= json_encode($dataProvider->models) ?>;
+    var trees = <?= json_encode($trees) ?>;
 
 	mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
 		const map1 = new mapboxgl.Map({
@@ -378,10 +265,6 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
     const numberOfItemsToExtract = 25;
     waypoints1 = extractProportionalItems(waypoints1, numberOfItemsToExtract);
 
-    // const waypointsCount = waypoints1.length;
-    // const waypointsMiddle = Math.floor(waypointsCount / 2);
-    // waypoints1 = [waypoints1[0], waypoints1[waypointsMiddle-1], waypoints1[waypointsCount - 1]];
-
      const directions = new MapboxDirections({
         accessToken: mapboxgl.accessToken,
         unit: 'metric',                  
@@ -390,7 +273,7 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
         geometries: 'geojson',        
         alternatives: false,             
         controls: { inputs: false, instructions: false }, 
-        interactive: true                
+        interactive: false                
     });
 
     map1.addControl(directions, 'top-left');
@@ -479,6 +362,38 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
     // Add endpoint markers (A and B) to the map
     new mapboxgl.Marker({ element: markerA }).setLngLat([waypoints1[0][0], waypoints1[0][1]]).addTo(map1);
     new mapboxgl.Marker({ element: markerB }).setLngLat([waypoints1[waypoints1.length - 1][0], waypoints1[waypoints1.length - 1][1]]).addTo(map1);
+
+    const createTreeMarkerElement = () => {
+          const markerElement = document.createElement('div');
+          markerElement.className = 'tree-marker';
+        markerElement.innerHTML = `<svg width="35" height="35">
+                                    <image href="../assets/svg/park-alt1.svg" width="100%" height="100%" />
+                                   </svg>`;
+          return markerElement;
+      }
+
+    trees.map(tree => {
+
+        const treeMarker = createTreeMarkerElement();
+        new mapboxgl.Marker({
+            element: treeMarker
+        })
+        .setLngLat([tree.longitude, tree.latitude])
+        .setPopup(
+            new mapboxgl.Popup().setHTML(`
+                <div class="m-1" style="background-color: #ffffff;">
+                <h3 class="text-center">${tree.common_name}</h3>
+                <div>
+                    <div>Longitude: ${tree.longitude}</div>
+                    <div>Latitude: ${tree.latitude}</div>
+                    <div>${tree.date_encoded}</div>
+                </div>
+                </div>
+            `)
+            )
+        .addTo(map1);
+    })
+
 });
 
 

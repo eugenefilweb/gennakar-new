@@ -19,6 +19,22 @@ use app\models\search\TreeSearch;
  */
 class PatrolController extends Controller 
 {
+
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => \yii\filters\AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'], // @ represents authenticated users
+                    ],
+                ],
+            ],
+        ];
+    }
     public function actionFindByKeywords($keywords='', $status=null)
     {
         return $this->asJson(
@@ -434,10 +450,42 @@ class PatrolController extends Controller
         return $this->render('test-map');
     }
 
+    // public function actionAjax(){
 
-    public function actionAjax(){
+    //     $searchModel = new PatrolSearch([
+    //         'searchAction' => ['patrol/map']
+    //     ]);
 
-        return $this->renderAjax('mapbox');
-    }
+    //     $queryParams = App::queryParams();
+    //     $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
+    //     $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
+
+    //     $data = $dataProvider->models;
+    //     $coordinates = [];
+
+    //     foreach ($data as $value) {
+    //         $user_id = $value->user_id;
+    //         $profile = new ProfileForm(['user_id' => $user_id]);
+    //         $user_fullName = $profile->getFullname();
+
+    //         $coordinatesArray = $value->attributes['coordinates'];
+        
+    //         $userCoordinates = array_map(function ($coordinate) use ($user_id, $user_fullName) {
+    //             $coordinate['user_id'] = $user_id;
+    //             $coordinate['full_name'] = $user_fullName;
+    //             return $coordinate;
+    //         }, $coordinatesArray);
+
+    //         if (!empty($userCoordinates)) {
+    //             $coordinates[] = $userCoordinates;
+    //         }
+    //     }
+        
+    //     return $this->renderAjax('mapbox', [
+    //         'searchModel' => $searchModel,
+    //         'dataProvider' => $dataProvider,
+    //         'coordinates' => $coordinates,
+    //     ]);
+    // }
 }
 

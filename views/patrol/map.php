@@ -12,6 +12,7 @@ use app\widgets\LinkPager;
 use app\widgets\OpenLayer;
 use app\widgets\SearchButton;
 
+use yii\helpers\Url;
 use yii\web\View;
 
 $this->title = 'Patrols: Map';
@@ -20,12 +21,21 @@ $this->params['searchModel'] = $searchModel;
 $this->params['activeMenuLink'] = '/patrol/map';
 $this->params['wrapCard'] = false;
 
-$this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
+$waypoints = call_user_func_array('array_merge', $coordinates);
+
+$mapbox_url = Url::to(['patrol/ajax']);
+// $script = <<<JS
+
+//   $('#mapbox').load('{$mapbox_url}');
+
+// JS;
+
+$this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css',['position' => View::POS_HEAD]);
 $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
 $this->registerJsFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js', ['position' => View::POS_HEAD]);
 $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css',['position' => View::POS_HEAD]);
 
-$waypoints = call_user_func_array('array_merge', $coordinates);
+$this->regsisterJs($script);
 ?>
 
 <div class="patrol-index-page">
@@ -40,6 +50,7 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
             ]) ?>
 
                 <div id="map" style="height: 100%;"></div>
+                <!-- <div id="mapbox" style="height: 100%;"></div> -->
                 
             <?php $this->endContent() ?>
             
@@ -320,4 +331,5 @@ $waypoints = call_user_func_array('array_merge', $coordinates);
   });
   
 </script>
+
 

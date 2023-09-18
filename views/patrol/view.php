@@ -31,47 +31,6 @@ $this->registerCssFile('https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-di
 $treeSvg = Url::to(['@app/assets/media/svg/files/park-alt1.svg']);
 
 ?>
-<style>
-
-/* #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-    } */
-    /* .marker {
-        background-image: url('https://freepngimg.com/thumb/map/66932-openstreetmap-map-google-icons-maps-computer-marker.png');
-        background-size: cover;
-        background-color: gray;
-        width: 7px;
-        height: 7px;
-        border: 2px solid green;
-        border-radius: 50%;
-        cursor: pointer;
-    } */
-
-    /* .mapboxgl-popup {
-        max-width: 200px;
-    }
-
-    .mapboxgl-popup-content {
-        text-align: center;
-        font-family: 'Open Sans', sans-serif;
-    } */
-
-
-    .mapbox-marker {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        cursor: pointer;
-        background-color: #3bb2d0;
-        border: 2px solid #fff;
-    }
-
-
-
-</style>
 
 <div class="patrol-view-page">
     <?= Anchors::widget([
@@ -95,19 +54,7 @@ $treeSvg = Url::to(['@app/assets/media/svg/files/park-alt1.svg']);
 
 
                 <div id="map" style="height: 500px;"></div>
-                
-                <?php /* echo OpenLayer::widget([
-                    'height' => '500px;',
-                    'withSearch' => false,
-                    'zoom' => 13,
-                    'addMarkers' => false,
-                    'coordinates' => $model->formattedCoordinates,
-                    'withLine' => true,
-                    'addStartMarker' => true,
-                    'addEndMarker' => true,
-                    // 'showCurrentLocation' => true,
-                    'zoom' => 14
-                ]) */?>
+
 
             <?php $this->endContent() ?>
         </div>
@@ -178,7 +125,7 @@ $treeSvg = Url::to(['@app/assets/media/svg/files/park-alt1.svg']);
                             <span class="flex-shrink-0 mr-2">
 
                                 <span class="svg-icon svg-icon-md">
-                                    <!--begin::Svg Icon | path:assets/media/svg/icons/Map/Marker1.svg-->
+                                    <!-- begin::Svg Icon | path:assets/media/svg/icons/Map/Marker1.svg -->
                                     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                                         <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                             <rect x="0" y="0" width="24" height="24"></rect>
@@ -386,7 +333,7 @@ $treeSvg = Url::to(['@app/assets/media/svg/files/park-alt1.svg']);
                 <div>
                     <div>Longitude: ${tree.longitude}</div>
                     <div>Latitude: ${tree.latitude}</div>
-                    <div>${tree.date_encoded}</div>
+                    <div>Date: ${tree.date_encoded}</div>
                 </div>
                 </div>
             `)
@@ -399,4 +346,3 @@ $treeSvg = Url::to(['@app/assets/media/svg/files/park-alt1.svg']);
 
 
 </script>
-

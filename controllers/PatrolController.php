@@ -7,6 +7,7 @@ use app\helpers\StringHelper;
 use app\models\form\user\ProfileForm;
 use Yii;
 use app\helpers\App;
+use app\helpers\ArrayHelper;
 use app\helpers\Html;
 use app\helpers\Url;
 use app\models\Patrol;
@@ -17,34 +18,19 @@ use app\models\search\TreeSearch;
 /**
  * PatrolController implements the CRUD actions for Patrol model.
  */
-class PatrolController extends Controller 
+class PatrolController extends Controller
 {
 
-
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => \yii\filters\AccessControl::class,
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'roles' => ['@'], // @ represents authenticated users
-                    ],
-                ],
-            ],
-        ];
-    }
-    public function actionFindByKeywords($keywords='', $status=null)
+    public function actionFindByKeywords($keywords = '', $status = null)
     {
         return $this->asJson(
             Patrol::findByKeywords($keywords, [
-                'u.username',  
-                'p.user_id',  
-                'p.watershed',  
-                'p.date',  
-                'p.notes',  
-                'p.distance',  
+                'u.username',
+                'p.user_id',
+                'p.watershed',
+                'p.date',
+                'p.notes',
+                'p.distance',
             ], 10, [
                 'p.status' => $status
             ])
@@ -84,16 +70,18 @@ class PatrolController extends Controller
         $dataProvider->query->andWhere(['patrol_id' => $model->id]);
 
         $data = $dataProvider->models;
-        $trees = [];
-        foreach($data as $key => $value){
-            $trees[$key]['common_name'] = $value->common_name;
-            $trees[$key]['id'] = $value->id;
-            $trees[$key]['date_encoded'] = $value->date_encoded;
-            $trees[$key]['latitude'] = $value->latitude;
-            $trees[$key]['longitude'] = $value->longitude;
-            $trees[$key]['patrol_id'] = $value->patrol_id;
-        }
+        $trees = ArrayHelper::toArray($data, [
+            'Patrol' => []
+        ]);
 
+        foreach ($trees as &$value) {
+            if (isset($value['photos'][0])) {
+                $value['photo_url'] = Url::image($value['photos'][0], ['width' => 500, 'height' => 500], true);
+            } else {
+                $value['photo_url'] = '';
+            }
+        }
+        
         return $this->render('view', [
             'model' => $model,
             'dataProvider' => $dataProvider,
@@ -107,7 +95,7 @@ class PatrolController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate($status=Patrol::FOR_VALIDATION)
+    public function actionCreate($status = Patrol::FOR_VALIDATION)
     {
         $model = new Patrol([
             'status' => $status,
@@ -190,10 +178,9 @@ class PatrolController extends Controller
     {
         $model = Patrol::controllerFind($id);
 
-        if($model->delete()) {
+        if ($model->delete()) {
             App::success('Successfully Deleted');
-        }
-        else {
+        } else {
             App::danger(json_encode($model->errors));
         }
 
@@ -244,7 +231,7 @@ class PatrolController extends Controller
     {
         $model = Patrol::controllerFind($id);
         $trees = Tree::findAll(['patrol_id' => $model->id]);
-        
+
         $this->layout = 'print';
         return $this->render('print-report', [
             'model' => $model,
@@ -260,9 +247,9 @@ class PatrolController extends Controller
         ]);
         $dataProvider = $searchModel->search(['PatrolSearch' => App::queryParams()]);
         $dataProvider->query->andWhere(['p.status' => Patrol::FOR_VALIDATION]);
-        
-        $searchModel->status= Patrol::FOR_VALIDATION;
-         
+
+        $searchModel->status = Patrol::FOR_VALIDATION;
+
         return $this->render('for-validation', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -275,12 +262,12 @@ class PatrolController extends Controller
             'searchAction' => ['patrol/validated'],
             'searchKeywordUrl' => ['patrol/find-by-keywords', 'status' => Patrol::VALIDATED],
         ]);
-     
-        
+
+
         $dataProvider = $searchModel->search(['PatrolSearch' => App::queryParams()]);
         $dataProvider->query->andWhere(['p.status' => Patrol::VALIDATED]);
-        
-        $searchModel->status=Patrol::VALIDATED;
+
+        $searchModel->status = Patrol::VALIDATED;
 
         return $this->render('validated', [
             'searchModel' => $searchModel,
@@ -299,44 +286,8 @@ class PatrolController extends Controller
         $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
         $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
 
-        // $sql = $dataProvider->query->createCommand()->getRawSql();
-        // Raw SQL Query: SELECT `p`.* FROM `tbl_patrols` `p` LEFT JOIN `tbl_users` `u` ON `p`.`user_id` = `u`.`id`
-
-        // $data = $dataProvider->models;
-        // $coordinates = [];
-        // $userIds = [];
-        // $userFullname = [];
-
-        // foreach($dataProvider->models as $key1 => $value1){
-        //     $userId = $value1->user_id;
-        //     $profile = new ProfileForm(['user_id'=> $userId]);
-        //     $userFullname[] = $profile->getFullname();
-        // }
-
-
-        // foreach($data as $key => $value){
-        //     $coordinatesArray = $value->attributes['coordinates'];
-        //     $coordinates[] = $coordinatesArray;
-        //     $userIds[] = $value->user_id;
-        // }
-
-        // $i = 0; 
-        // foreach ($coordinates as &$coordinate) {
-        //     $user_id = $userIds[$i];
-        //     $user_fullName = $userFullname[$i];
-
-        //     foreach ($coordinate as &$data) {
-        //         $data['user_id'] = $user_id;
-        //         $data['full_name'] = $user_fullName;
-        //     }
-        //     $i++; 
-        // }
-        
         $data = $dataProvider->models;
         $coordinates = [];
-
-        // print_r($data);
-        // die;
 
         foreach ($data as $value) {
             $user_id = $value->user_id;
@@ -344,15 +295,13 @@ class PatrolController extends Controller
             $user_fullName = $profile->getFullname();
 
             $coordinatesArray = $value->attributes['coordinates'];
-        
+
             $userCoordinates = array_map(function ($coordinate) use ($user_id, $user_fullName) {
                 $coordinate['user_id'] = $user_id;
                 $coordinate['full_name'] = $user_fullName;
                 return $coordinate;
             }, $coordinatesArray);
 
-
-            // $coordinates[] = $userCoordinates;
             if (!empty($userCoordinates)) {
                 $coordinates[] = $userCoordinates;
             }
@@ -388,27 +337,27 @@ class PatrolController extends Controller
         //             $data[$length-1]['description'] = Html::tag('div', Html::tag('b', 'END OF PATROL')) . $data[$length-1]['description'];
         //         }
         //     }
-        
+
         //     return $data;
         // }, false);
 
         // foreach($coordinates as $key1 => $value1){
         //     // ob_start();
         //     foreach($value1 as $key2 => $value2){
-                
+
         //         // print_r($value2['timestamp']);
-                
+
         //         $timestamp = $value2['timestamp'];
         //         if (strtotime($timestamp) === false) {
         //             echo "Invalid timestamp: $timestamp\n";
         //         } else {
         //             echo "Valid timestamp: $timestamp\n";
         //         }
-                
+
         //     }
         //     // return ob_get_clean();
         // }
-        
+
 
         //   die;
 
@@ -419,73 +368,34 @@ class PatrolController extends Controller
         //     print_r($models);
 
         // die;
-        
+
         return $this->render('map', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'coordinates' => $coordinates,
         ]);
-        
+
     }
-        
+
     public function actionValidate($id)
     {
         $model = Patrol::controllerFind($id);
         $model->status = Patrol::VALIDATED;
-        
-        if($model->save()) {
+
+        if ($model->save()) {
             App::success('Successfully Vlidated');
-        }
-        else {
+        } else {
             App::danger(json_encode($model->errors));
         }
-        
+
         return $this->redirect(App::referrer());
     }
 
 
     public function actionTestMap()
     {
-        
+
         return $this->render('test-map');
     }
 
-    // public function actionAjax(){
-
-    //     $searchModel = new PatrolSearch([
-    //         'searchAction' => ['patrol/map']
-    //     ]);
-
-    //     $queryParams = App::queryParams();
-    //     $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
-    //     $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
-
-    //     $data = $dataProvider->models;
-    //     $coordinates = [];
-
-    //     foreach ($data as $value) {
-    //         $user_id = $value->user_id;
-    //         $profile = new ProfileForm(['user_id' => $user_id]);
-    //         $user_fullName = $profile->getFullname();
-
-    //         $coordinatesArray = $value->attributes['coordinates'];
-        
-    //         $userCoordinates = array_map(function ($coordinate) use ($user_id, $user_fullName) {
-    //             $coordinate['user_id'] = $user_id;
-    //             $coordinate['full_name'] = $user_fullName;
-    //             return $coordinate;
-    //         }, $coordinatesArray);
-
-    //         if (!empty($userCoordinates)) {
-    //             $coordinates[] = $userCoordinates;
-    //         }
-    //     }
-        
-    //     return $this->renderAjax('mapbox', [
-    //         'searchModel' => $searchModel,
-    //         'dataProvider' => $dataProvider,
-    //         'coordinates' => $coordinates,
-    //     ]);
-    // }
 }
-

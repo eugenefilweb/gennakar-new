@@ -12,6 +12,7 @@ use app\widgets\LinkPager;
 use app\widgets\OpenLayer;
 use app\widgets\SearchButton;
 use \yii\data\Pagination;
+use yii\web\View;
 
 $this->title = 'Trees: Map';
 $this->params['breadcrumbs'][] = $this->title;
@@ -19,6 +20,13 @@ $this->params['searchModel'] = $searchModel;
 $this->params['showCreateButton'] = true; 
 $this->params['activeMenuLink'] = '/tree/map';
 $this->params['wrapCard'] = false;
+
+$this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css',['position' => View::POS_HEAD]);
+$this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
+
+
+// print_r($searchModel->map_zoom_level);
+// die;
 ?>
 <div class="tree-map-index-page">
     <div class="row">
@@ -33,10 +41,17 @@ $this->params['wrapCard'] = false;
                 </div>',
                 'stretch' => true
             ]) ?>
+
+                <?php /*
                 <?= OpenLayer::widget([
                     'coordinates' => $coordinates,
                     'zoom' => $searchModel->map_zoom_level,
                 ]) ?>
+
+                */ ?>
+
+                <div id="map" style="height: 100%;"></div>
+
             <?php $this->endContent() ?>
         </div>
         <div class="col-md-4">
@@ -84,3 +99,85 @@ $this->params['wrapCard'] = false;
         </div>
     </div>
 </div>
+
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
+
+  const waypoints = <?=json_encode($coordinates) ?>;
+//   const waypointsLatLng = waypoints.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
+
+//   const featuresPlaces = waypointsLatLng.map(waypoint => (
+//     {
+//       'type': 'Feature',
+//       'properties': {
+//         'description': ``
+//       },
+//       'geometry': {
+//         'type': 'Point',
+//         'coordinates': waypoint
+//       }
+//     }
+//   ));
+
+const map1 = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v12',
+    center: [waypoints[0].longitude, waypoints[0].latitude],
+    zoom: <?= json_encode($searchModel->map_zoom_level ?: 4) ?>,
+});
+
+
+  map1.on('load', () => {
+
+    // map1.addSource('places', {
+    //   'type': 'geojson',
+    //   'data': {
+    //     'type': 'FeatureCollection',
+    //     'features': featuresPlaces
+    //   }
+    // });
+
+    // map1.addLayer({
+    //   'id': 'places',
+    //   'type': 'circle',
+    //   'source': 'places',
+    //   'paint': {
+    //   'circle-color': '#3bb2d0',
+    //   'circle-radius': 6,
+    //   'circle-stroke-width': 2,
+    //   'circle-stroke-color': '#ffffff'
+    //   }
+    // });
+
+    const createTreeMarkerElement = () => {
+            const markerElement = document.createElement('div');
+            markerElement.className = 'tree-marker';
+            markerElement.innerHTML = `<?= Html::img("/assets/svg/park-alt1.svg", ['width' => 35, 'height' => 35]) ?>`
+
+            return markerElement;
+        }
+
+    waypoints.map(tree => {
+        const popupHtml = `<div class="m-1" style="background-color: #ffffff;">
+                                <div class="d-flex justify-content-center align-items-center w-100 h-100 mb-3 mt-2">
+                                    <image src=${tree.photo_url ? tree.photo_url :  "/assets/svg/tree.jpg"} width="100%" height="100%">
+                                </div>
+                                <h3 class="text-center">${tree.common_name.toUpperCase()}</h3>
+                                <div>
+                                    <div>Longitude: ${tree.longitude}</div>
+                                    <div>Latitude: ${tree.latitude}</div>
+                                    ${tree.date_encoded ? `<div>Date: ${tree.date_encoded}</div>` : ""}
+                                </div>
+                            </div>`
+
+        const treeMarker = createTreeMarkerElement();
+        new mapboxgl.Marker({element: treeMarker})
+            .setLngLat([tree.longitude ?? null, tree.latitude ?? null])
+            .setPopup(
+                new mapboxgl.Popup().setHTML(popupHtml))
+            .addTo(map1);
+    })
+
+  });
+  
+</script>

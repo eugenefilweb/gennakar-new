@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\Url;
 use Yii;
 use app\helpers\App;
 use app\helpers\ArrayHelper;
@@ -228,8 +229,20 @@ class TreeController extends Controller
     {
         $searchModel = new TreeSearch();
         $dataProvider = $searchModel->search(['TreeSearch' => App::queryParams()]);
+        // $coordinates = array_values(Tree::coordinates($dataProvider->models, $this) ?: []);
 
-        $coordinates = array_values(Tree::coordinates($dataProvider->models, $this) ?: []);
+        $data = $dataProvider->models;
+        $coordinates = ArrayHelper::toArray($data, [
+            'Patrol' => []
+        ]);
+
+        foreach ($coordinates as &$value) {
+            if (isset($value['photos'][0])) {
+                $value['photo_url'] = Url::image($value['photos'][0], ['width' => 500, 'height' => 500], true);
+            } else {
+                $value['photo_url'] = '';
+            }
+        }
 
         return $this->render('map', [
             'searchModel' => $searchModel,

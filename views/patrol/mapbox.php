@@ -1,13 +1,12 @@
 <?php
 
-use yii\web\View;
-
-
 $waypoints = call_user_func_array('array_merge', $coordinates);
+
+// $this->registerJs($script);
 ?>
 
-<div id="map" style="height: 500px;"></div>
-                
+<div id="map" style="height: 100%;">Test</div>
+
 <script>
   mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
 

@@ -16,17 +16,14 @@ use yii\web\View;
 
 $this->title = 'Trees: Map';
 $this->params['breadcrumbs'][] = $this->title;
-$this->params['searchModel'] = $searchModel; 
-$this->params['showCreateButton'] = true; 
+$this->params['searchModel'] = $searchModel;
+$this->params['showCreateButton'] = true;
 $this->params['activeMenuLink'] = '/tree/map';
 $this->params['wrapCard'] = false;
 
-$this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css',['position' => View::POS_HEAD]);
+$this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
 $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
 
-
-// print_r($searchModel->map_zoom_level);
-// die;
 ?>
 <div class="tree-map-index-page">
     <div class="row">
@@ -34,23 +31,23 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
             <?php $this->beginContent('@app/views/layouts/_card_wrapper.php', [
                 'title' => 'Map View',
                 'toolbar' => '<div class="card-toolbar">
-                    <span class="lead font-weight-bold">Trees Found: '. number_format($total) .'</span>
-                    '. Html::popupCenter('Print Report', Url::toRoute(['tree/print-map-report?']) . http_build_query(App::queryParams()), [
-                        'class' => 'btn btn-success font-weight-bold ml-10'
-                    ]) .'
+                    <span class="lead font-weight-bold">Trees Found: ' . number_format($total) . '</span>
+                    ' . Html::popupCenter('Print Report', Url::toRoute(['tree/print-map-report?']) . http_build_query(App::queryParams()), [
+                                'class' => 'btn btn-success font-weight-bold ml-10'
+                            ]) . '
                 </div>',
                 'stretch' => true
             ]) ?>
 
-                <?php /*
-                <?= OpenLayer::widget([
-                    'coordinates' => $coordinates,
-                    'zoom' => $searchModel->map_zoom_level,
-                ]) ?>
+            <?php /*
+            <?= OpenLayer::widget([
+            'coordinates' => $coordinates,
+            'zoom' => $searchModel->map_zoom_level,
+            ]) ?>
 
-                */ ?>
+            */?>
 
-                <div id="map" style="height: 100%;"></div>
+            <div id="map" style="height: 100%;"></div>
 
             <?php $this->endContent() ?>
         </div>
@@ -58,109 +55,76 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
             <?php $this->beginContent('@app/views/layouts/_card_wrapper.php', [
                 'title' => 'Advanced Filter',
             ]) ?>
-                    <?php $form = ActiveForm::begin(['id' => 'tree-form', 'method' => 'get', 'action' => ['tree/map']]); ?>
-                        <div class="scroll scroll-pull" data-scroll="true" data-wheel-propagation="true" style="height: 60vh">
-                            <div class="accordion accordion-solid accordion-toggle-plus" id="accordion-filter">
-                                <?= App::foreach($searchModel->advancedFilterAttributes, fn ($attribute) => $this->render('_map-advanced-filter', [
-                                    'form' => $form,
-                                    'searchModel' => $searchModel,
-                                    'attribute' => $attribute
-                                ])) ?>
+            <?php $form = ActiveForm::begin(['id' => 'tree-form', 'method' => 'get', 'action' => ['tree/map']]); ?>
+            <div class="scroll scroll-pull" data-scroll="true" data-wheel-propagation="true" style="height: 60vh">
+                <div class="accordion accordion-solid accordion-toggle-plus" id="accordion-filter">
+                    <?= App::foreach($searchModel->advancedFilterAttributes, fn($attribute) => $this->render('_map-advanced-filter', [
+                        'form' => $form,
+                        'searchModel' => $searchModel,
+                        'attribute' => $attribute
+                    ])) ?>
 
-                                <?= $this->render('_map-advanced-filter', [
-                                    'form' => $form,
-                                    'searchModel' => $searchModel,
-                                    'attribute' => 'status',
-                                    'data' => [
-                                        Tree::VALIDATED => 'Validated',
-                                        Tree::NOT_VALIDATED => 'Not Validated',
-                                    ]
-                                ]) ?>
+                    <?= $this->render('_map-advanced-filter', [
+                        'form' => $form,
+                        'searchModel' => $searchModel,
+                        'attribute' => 'status',
+                        'data' => [
+                            Tree::VALIDATED => 'Validated',
+                            Tree::NOT_VALIDATED => 'Not Validated',
+                        ]
+                    ]) ?>
 
-                                <label for="map_zoom_level" class="mt-3">Map Zoom Level</label>
-                                <div>
-                                    <input type="range" id="map_zoom_level" name="map_zoom_level" 
-                                         min="1" max="20" value="<?= $searchModel->map_zoom_level  ?>" step="1" style="width: -webkit-fill-available;">
-                                </div>
+                    <label for="map_zoom_level" class="mt-3">Map Zoom Level</label>
+                    <div>
+                        <input type="range" id="map_zoom_level" name="map_zoom_level" min="1" max="20"
+                            value="<?= $searchModel->map_zoom_level ?>" step="1" style="width: -webkit-fill-available;">
+                    </div>
 
-                                <?= LinkPager::widget([
-                                    'options' => [
-                                        'class' => 'mt-5 justify-content-center app-linkpager d-flex flex-wrap justify-content-center py-2'
-                                    ],
-                                    'pagination' => new Pagination(['totalCount' => $dataProvider->totalCount])
-                                ]) ?>
-                            </div>
-                        </div>
-                        <div class="mt-5">
-                            <?= SearchButton::widget() ?>
-                        </div>
-                    <?php ActiveForm::end(); ?>
+                    <?= LinkPager::widget([
+                        'options' => [
+                            'class' => 'mt-5 justify-content-center app-linkpager d-flex flex-wrap justify-content-center py-2'
+                        ],
+                        'pagination' => new Pagination(['totalCount' => $dataProvider->totalCount])
+                    ]) ?>
+                </div>
+            </div>
+            <div class="mt-5">
+                <?= SearchButton::widget() ?>
+            </div>
+            <?php ActiveForm::end(); ?>
             <?php $this->endContent() ?>
         </div>
     </div>
 </div>
 
 <script>
-  mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
+    mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
 
-  const waypoints = <?=json_encode($coordinates) ?>;
-//   const waypointsLatLng = waypoints.map(coord => [parseFloat(coord.lon), parseFloat(coord.lat)]);
+    const waypoints = <?= json_encode($coordinates) ?>;
 
-//   const featuresPlaces = waypointsLatLng.map(waypoint => (
-//     {
-//       'type': 'Feature',
-//       'properties': {
-//         'description': ``
-//       },
-//       'geometry': {
-//         'type': 'Point',
-//         'coordinates': waypoint
-//       }
-//     }
-//   ));
+    const center = waypoints.length > 0 ? [waypoints[0].longitude, waypoints[0].latitude] : [121.45, 14.45];
 
-const map1 = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v12',
-    center: [waypoints[0].longitude, waypoints[0].latitude],
-    zoom: <?= json_encode($searchModel->map_zoom_level ?: 4) ?>,
-});
-
-
-  map1.on('load', () => {
-
-    // map1.addSource('places', {
-    //   'type': 'geojson',
-    //   'data': {
-    //     'type': 'FeatureCollection',
-    //     'features': featuresPlaces
-    //   }
-    // });
-
-    // map1.addLayer({
-    //   'id': 'places',
-    //   'type': 'circle',
-    //   'source': 'places',
-    //   'paint': {
-    //   'circle-color': '#3bb2d0',
-    //   'circle-radius': 6,
-    //   'circle-stroke-width': 2,
-    //   'circle-stroke-color': '#ffffff'
-    //   }
-    // });
+    const map1 = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: center,
+        zoom: <?= json_encode($searchModel->map_zoom_level ?: 4) ?>,
+    });
 
     const createTreeMarkerElement = () => {
-            const markerElement = document.createElement('div');
-            markerElement.className = 'tree-marker';
-            markerElement.innerHTML = `<?= Html::img("/assets/svg/park-alt1.svg", ['width' => 35, 'height' => 35]) ?>`
+        const markerElement = document.createElement('div');
+        markerElement.className = 'tree-marker';
+        markerElement.innerHTML = `<?= Html::img("/assets/svg/park-alt1.svg", ['width' => 35, 'height' => 35]) ?>`
 
-            return markerElement;
-        }
+        return markerElement;
+    }
 
-    waypoints.map(tree => {
-        const popupHtml = `<div class="m-1" style="background-color: #ffffff;">
+    map1.on('load', () => {
+
+        waypoints.map(tree => {
+            const popupHtml = `<div class="m-1" style="background-color: #ffffff;">
                                 <div class="d-flex justify-content-center align-items-center w-100 h-100 mb-3 mt-2">
-                                    <image src=${tree.photo_url ? tree.photo_url :  "/assets/svg/tree.jpg"} width="100%" height="100%">
+                                    <image src=${tree.photo_url ? tree.photo_url : "/assets/svg/tree.jpg"} width="100%" height="100%">
                                 </div>
                                 <h3 class="text-center">${tree.common_name.toUpperCase()}</h3>
                                 <div>
@@ -170,14 +134,14 @@ const map1 = new mapboxgl.Map({
                                 </div>
                             </div>`
 
-        const treeMarker = createTreeMarkerElement();
-        new mapboxgl.Marker({element: treeMarker})
-            .setLngLat([tree.longitude ?? null, tree.latitude ?? null])
-            .setPopup(
-                new mapboxgl.Popup().setHTML(popupHtml))
-            .addTo(map1);
-    })
+            const treeMarker = createTreeMarkerElement();
+            new mapboxgl.Marker({ element: treeMarker })
+                .setLngLat([tree.longitude ?? null, tree.latitude ?? null])
+                .setPopup(
+                    new mapboxgl.Popup().setHTML(popupHtml))
+                .addTo(map1);
+        })
 
-  });
-  
+    });
+
 </script>

@@ -1,10 +1,11 @@
 <?php
 
+
 namespace app\widgets;
 
 use app\helpers\Html;
 use app\widgets\BootstrapSelect;
- 
+
 class Filter extends BaseWidget
 {
     public $attribute;
@@ -42,6 +43,7 @@ class Filter extends BaseWidget
                 'name' => $_name,
                 'checked' => $checked,
                 'inputName' => $this->name,
+                'attribute' => $this->attribute,
             ]);
         }
 

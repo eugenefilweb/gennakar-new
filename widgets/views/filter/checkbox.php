@@ -1,9 +1,13 @@
 <label class='checkbox'>
     <input 
         <?= $tags ?>
+        class='<?= $name ?>'
         type='checkbox' 
         value='<?= $id ?>' 
-        name='<?= $inputName ?>' 
+        name='<?= $inputName ?>'
+        data-name ='<?= $name?>'
+        data-attribute ='<?= $attribute?>'
         <?= $checked ?>> 
-    <span></span>  <?= $name ?>
+
+    <span></span> <?= $name ?>
 </label>

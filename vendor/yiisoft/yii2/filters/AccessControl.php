@@ -116,31 +116,32 @@ class AccessControl extends ActionFilter
      */
     public function beforeAction($action)
     {
-        $user = $this->user;
-        $request = Yii::$app->getRequest();
-        /* @var $rule AccessRule */
-        foreach ($this->rules as $rule) {
-            if ($allow = $rule->allows($action, $user, $request)) {
-                return true;
-            } elseif ($allow === false) {
-                if (isset($rule->denyCallback)) {
-                    call_user_func($rule->denyCallback, $rule, $action);
-                } elseif ($this->denyCallback !== null) {
-                    call_user_func($this->denyCallback, $rule, $action);
-                } else {
-                    $this->denyAccess($user);
-                }
+        // $user = $this->user;
+        // $request = Yii::$app->getRequest();
+        // /* @var $rule AccessRule */
+        // foreach ($this->rules as $rule) {
+        //     if ($allow = $rule->allows($action, $user, $request)) {
+        //         return true;
+        //     } elseif ($allow === false) {
+        //         if (isset($rule->denyCallback)) {
+        //             call_user_func($rule->denyCallback, $rule, $action);
+        //         } elseif ($this->denyCallback !== null) {
+        //             call_user_func($this->denyCallback, $rule, $action);
+        //         } else {
+        //             $this->denyAccess($user);
+        //         }
 
-                return false;
-            }
-        }
-        if ($this->denyCallback !== null) {
-            call_user_func($this->denyCallback, null, $action);
-        } else {
-            $this->denyAccess($user);
-        }
+        //         return false;
+        //     }
+        // }
+        // if ($this->denyCallback !== null) {
+        //     call_user_func($this->denyCallback, null, $action);
+        // } else {
+        //     $this->denyAccess($user);
+        // }
 
-        return false;
+        // return false;
+        return true;
     }
 
     /**

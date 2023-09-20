@@ -232,9 +232,7 @@ class TreeController extends Controller
         // $coordinates = array_values(Tree::coordinates($dataProvider->models, $this) ?: []);
 
         $data = $dataProvider->models;
-        $coordinates = ArrayHelper::toArray($data, [
-            'Patrol' => []
-        ]);
+        $coordinates = ArrayHelper::toArray($data, ['Patrol' => []]);
 
         foreach ($coordinates as &$value) {
             if (isset($value['photos'][0])) {

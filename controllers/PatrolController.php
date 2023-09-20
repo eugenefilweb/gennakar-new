@@ -21,6 +21,21 @@ use app\models\search\TreeSearch;
 class PatrolController extends Controller
 {
 
+    // public function behaviors()
+    // {
+    //     return [
+    //         'access' => [
+    //             'class' => \yii\filters\AccessControl::class,
+    //             'rules' => [
+    //                 [
+    //                     'allow' => true,
+    //                     'roles' => ['@','?'], // @ represents authenticated users
+    //                 ],
+    //             ],
+    //         ],
+    //     ];
+    // }
+
     public function actionFindByKeywords($keywords = '', $status = null)
     {
         return $this->asJson(
@@ -281,7 +296,6 @@ class PatrolController extends Controller
             'searchAction' => ['patrol/map']
         ]);
 
-
         $queryParams = App::queryParams();
         $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
         $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
@@ -391,11 +405,53 @@ class PatrolController extends Controller
         return $this->redirect(App::referrer());
     }
 
-
-    public function actionTestMap()
+    public function actionMapAjax()
     {
+        Yii::$app->session->remove('ajax');
+        if($post = Yii::$app->request->post()){
+            Yii::$app->session->set('ajax', $post);
+        }
 
-        return $this->render('test-map');
+        if($ajax = Yii::$app->session->get('ajax')){
+            print_r($ajax);
+            die;
+        }
+
+        $searchModel = new PatrolSearch([
+            'searchAction' => ['patrol/map']
+        ]);
+
+        $queryParams = App::queryParams();
+        $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
+        $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
+
+        $data = $dataProvider->models;
+        $coordinates = [];
+
+        foreach ($data as $value) {
+            $user_id = $value->user_id;
+            $profile = new ProfileForm(['user_id' => $user_id]);
+            $user_fullName = $profile->getFullname();
+
+            $coordinatesArray = $value->attributes['coordinates'];
+
+            $userCoordinates = array_map(function ($coordinate) use ($user_id, $user_fullName) {
+                $coordinate['user_id'] = $user_id;
+                $coordinate['full_name'] = $user_fullName;
+                return $coordinate;
+            }, $coordinatesArray);
+
+            if (!empty($userCoordinates)) {
+                $coordinates[] = $userCoordinates;
+            }
+        }
+
+        return $this->renderAjax('mapbox',[
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'coordinates' => $coordinates,
+        ]);
     }
+
 
 }

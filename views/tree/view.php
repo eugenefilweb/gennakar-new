@@ -11,6 +11,8 @@ use app\widgets\DataList;
 use app\widgets\Detail;
 use app\widgets\OpenLayer;
 
+use yii\web\View;
+
 /* @var $this yii\web\View */
 /* @var $model app\models\Tree */
 
@@ -23,6 +25,9 @@ $this->params['showCreateButton'] = true;
 $this->params['wrapCard'] = false;
 $this->params['activeMenuLink'] = $model->activeMenuLink;
 
+$this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
+$this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
+
 $this->registerJs(<<< JS
     $('.btn-validate').click(function() {
         KTApp.block('#tree-form', {
@@ -33,6 +38,8 @@ $this->registerJs(<<< JS
         $('#tree-form').submit();
     });
 JS);
+
+
 ?>
 <div class="tree-view-page">
     <?= Anchors::widget([
@@ -60,10 +67,17 @@ JS);
                 'title' => 'Map Coordinates',
                 'stretch' => true
             ]) ?>
+
+                <?php /*
                 <?= OpenLayer::widget([
                     'latitude' => $model->latitude,
                     'longitude' => $model->longitude,
                 ]) ?>
+
+                */ ?>
+
+                <div id="map" style="height: 72%;"></div>
+
                 <?= Detail::widget([
                     'model' => $model,
                     'attributes' => [
@@ -74,6 +88,8 @@ JS);
             <?php $this->endContent() ?>
         </div>
     </div>
+
+
     <div class="row">
         <div class="col-md-12">
             <?php $this->beginContent('@app/views/layouts/_card_wrapper.php', [
@@ -105,6 +121,8 @@ JS);
             <?php $this->endContent() ?>
         </div>
     </div>
+
+
 </div>
 
 <div class="modal fade" id="modal-validate" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
@@ -116,6 +134,7 @@ JS);
                     <i aria-hidden="true" class="ki ki-close"></i>
                 </button>
             </div>
+
             <div class="modal-body">
                 <?php $form = ActiveForm::begin(['id' => 'tree-form', 'action' => ['tree/validate', 'id' => $model->id]]); ?>
                     <div class="row">
@@ -193,6 +212,8 @@ JS);
                     </div>
                 <?php ActiveForm::end(); ?>
             </div>
+
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-success font-weight-bold btn-validate">
@@ -202,3 +223,50 @@ JS);
         </div>
     </div>
 </div>
+
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
+
+    const waypoints = [<?= json_encode($tree) ?>];
+
+    const map1 = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [waypoints[0].longitude, waypoints[0].latitude],
+        zoom: 10,
+    });
+
+    const createTreeMarkerElement = () => {
+        const markerElement = document.createElement('div');
+        markerElement.className = 'tree-marker';
+        markerElement.innerHTML = `<?= Html::img("/assets/svg/park-alt1.svg", ['width' => 35, 'height' => 35]) ?>`
+
+        return markerElement;
+    }
+
+    map1.on('load', () => {
+
+        waypoints.map(tree => {
+            const popupHtml = `<div class="m-1" style="background-color: #ffffff;">
+                                <div class="d-flex justify-content-center align-items-center w-100 h-100 mb-3 mt-2">
+                                    <img src=${tree.photo_url ? tree.photo_url : "/assets/svg/tree.jpg"} style="width:100%; height:100%;">
+                                </div>
+                                <h3 class="text-center">${tree.common_name.toUpperCase()}</h3>
+                                <div>
+                                    <div>Longitude: ${tree.longitude}</div>
+                                    <div>Latitude: ${tree.latitude}</div>
+                                    ${tree.date_encoded ? `<div>Date: ${tree.date_encoded}</div>` : ""}
+                                </div>
+                            </div>`
+
+            const treeMarker = createTreeMarkerElement();
+            new mapboxgl.Marker({ element: treeMarker })
+                .setLngLat([tree.longitude ?? null, tree.latitude ?? null])
+                .setPopup(
+                    new mapboxgl.Popup().setHTML(popupHtml))
+                .addTo(map1);
+        })
+
+    });
+
+</script>

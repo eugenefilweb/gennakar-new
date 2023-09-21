@@ -95,6 +95,7 @@ class PatrolController extends Controller
             } else {
                 $value['photo_url'] = '';
             }
+            
         }
         
         return $this->render('view', [
@@ -300,6 +301,7 @@ class PatrolController extends Controller
         $queryParams['show_user_photo'] = $queryParams['show_user_photo'] ?? 0;
         $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
 
+        
         $data = $dataProvider->models;
         $coordinates = [];
 

@@ -63,8 +63,21 @@ class TreeController extends Controller
      */
     public function actionView($id)
     {
+
+        $model = Tree::controllerFind($id);
+        $tree = $model->attributes;
+
+        if (isset($tree['photos'][0])) {
+            $tree['photo_url'] = Url::image($tree['photos'][0], ['width' => 500, 'height' => 500], true);
+        }else if(isset($tree['photos']['fullheight'][0])){        
+            $tree['photo_url'] = Url::image($tree['photos']['fullheight'][0], ['width' => 500, 'height' => 500], true);
+        } else {
+            $tree['photo_url'] = '';
+        }
+
         return $this->render('view', [
-            'model' => Tree::controllerFind($id),
+            'model' => $model,
+            'tree' => $tree
         ]);
     }
 
@@ -234,9 +247,13 @@ class TreeController extends Controller
         $data = $dataProvider->models;
         $coordinates = ArrayHelper::toArray($data, ['Patrol' => []]);
 
+        
+
         foreach ($coordinates as &$value) {
             if (isset($value['photos'][0])) {
                 $value['photo_url'] = Url::image($value['photos'][0], ['width' => 500, 'height' => 500], true);
+            }else if(isset($value['photos']['fullheight'][0])){        
+                $value['photo_url'] = Url::image($value['photos']['fullheight'][0], ['width' => 500, 'height' => 500], true);
             } else {
                 $value['photo_url'] = '';
             }

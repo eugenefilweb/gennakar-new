@@ -6,34 +6,35 @@ use app\helpers\Url;
 use Yii;
 use app\helpers\App;
 use app\helpers\ArrayHelper;
-use app\models\Tree;
-use app\models\search\TreeSearch;
+use app\models\Fauna;
+use app\models\search\FaunaSearch;
 use app\widgets\OpenLayer;
 
+
 /**
- * TreeController implements the CRUD actions for Tree model.
+ * FaunaController implements the CRUD actions for Fauna model.
  */
-class TreeController extends Controller 
+class FaunaController extends Controller 
 {
-    public function actionFindByKeywords($keywords='', $status=Tree::VALIDATED)
+    public function actionFindByKeywords($keywords='', $status=Fauna::VALIDATED)
     {
         return $this->asJson(
-            Tree::findByKeywords($keywords, ['common_name', 'kingdom', 'family', 'genus', 'species', 'sub_species', 'varieta_and_infra_var_name', 'taxonomic_group'], 10, [
+            Fauna::findByKeywords($keywords, ['common_name', 'kingdom', 'family', 'genus', 'species', 'sub_species', 'varieta_and_infra_var_name'/* , ''taxonomic_group */, 'growth_habit', 'category_id', 'conservation_status', 'diameter'], 10, [
                 'status' => $status
             ])
         );
     }
 
     /**
-     * Lists all Tree models.
+     * Lists all Fauna models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new TreeSearch();
-        $dataProvider = $searchModel->search(['TreeSearch' => App::queryParams()]);
-        $dataProvider->query->andWhere(['status' => Tree::VALIDATED]);
-        $searchModel->status= Tree::VALIDATED;
+        $searchModel = new FaunaSearch();
+        $dataProvider = $searchModel->search(['FaunaSearch' => App::queryParams()]);
+        $dataProvider->query->andWhere(['status' => Fauna::VALIDATED]);
+        $searchModel->status= Fauna::VALIDATED;
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -43,11 +44,11 @@ class TreeController extends Controller
 
     public function actionForValidation()
     {
-        $searchModel = new TreeSearch();
-        $dataProvider = $searchModel->search(['TreeSearch' => App::queryParams()]);
-        $dataProvider->query->andWhere(['status' => Tree::NOT_VALIDATED]);
+        $searchModel = new FaunaSearch();
+        $dataProvider = $searchModel->search(['FaunaSearch' => App::queryParams()]);
+        $dataProvider->query->andWhere(['status' => Fauna::NOT_VALIDATED]);
         
-         $searchModel->status= Tree::NOT_VALIDATED;
+         $searchModel->status= Fauna::NOT_VALIDATED;
 
         return $this->render('for-validation', [
             'searchModel' => $searchModel,
@@ -56,7 +57,7 @@ class TreeController extends Controller
     }
 
     /**
-     * Displays a single Tree model.
+     * Displays a single Fauna model.
      * @param integer $id
      * @return mixed
      * @throws ForbiddenHttpException if the model cannot be found
@@ -64,34 +65,34 @@ class TreeController extends Controller
     public function actionView($id)
     {
 
-        $model = Tree::controllerFind($id);
-        $tree = $model->attributes;
+        $model = Fauna::controllerFind($id);
+        $coordinates = $model->attributes;
 
-        if (isset($tree['photos'][0])) {
-            $tree['photo_url'] = Url::image($tree['photos'][0], ['width' => 500, 'height' => 500], true);
-            $tree['token'] = $tree['photos'][0];
-        }else if(isset($tree['photos']['fullheight'][0])){        
-            $tree['photo_url'] = Url::image($tree['photos']['fullheight'][0], ['width' => 500, 'height' => 500], true);
-            $tree['token'] = $tree['photos']['fullheight'][0];
+        if (isset($coordinates['photos'][0])) {
+            $coordinates['photo_url'] = Url::image($coordinates['photos'][0], ['width' => 500, 'height' => 500], true);
+            $coordinates['token'] = $coordinates['photos'][0];
+        }else if(isset($coordinates['photos']['fullheight'][0])){        
+            $coordinates['photo_url'] = Url::image($coordinates['photos']['fullheight'][0], ['width' => 500, 'height' => 500], true);
+            $coordinates['token'] = $coordinates['photos']['fullheight'][0];
         } else {
-            $tree['photo_url'] = '';
-            $tree['token'] = '';
+            $coordinates['photo_url'] = '';
+            $coordinates['token'] = '';
         }
 
         return $this->render('view', [
             'model' => $model,
-            'tree' => $tree
+            'coordinates' => $coordinates
         ]);
     }
 
     /**
-     * Creates a new Tree model.
+     * Creates a new Fauna model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate($status = Tree::VALIDATED, $patrol_id=0, $referrer = false)
+    public function actionCreate($status = Fauna::VALIDATED, $patrol_id=0, $referrer = false)
     {
-        $model = new Tree([
+        $model = new Fauna([
             'latitude' => OpenLayer::LATITUDE,
             'longitude' => OpenLayer::LONGITUDE,
             'status' => $status,
@@ -100,7 +101,7 @@ class TreeController extends Controller
         ]);
 
         if ($model->load(App::post()) && $model->save()) {
-            App::success('Successfully Add Tree Item');
+            App::success('Successfully Add Fauna Item');
 
             $referrer = $referrer ?: $model->viewUrl;
             return $this->redirect($referrer);
@@ -114,18 +115,18 @@ class TreeController extends Controller
     }
 
     /**
-     * Duplicates a new Tree model.
+     * Duplicates a new Fauna model.
      * If duplication is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionDuplicate($id)
     {
-        $originalModel = Tree::controllerFind($id);
-        $model = new Tree();
+        $originalModel = Fauna::controllerFind($id);
+        $model = new Fauna();
         $model->attributes = $originalModel->attributes;
 
         if ($model->load(App::post()) && $model->validate()) {
-            $model->formatPhotos();
+            // $model->formatPhotos();
             $model->save();
             App::success('Successfully Duplicated');
 
@@ -139,7 +140,7 @@ class TreeController extends Controller
     }
 
     /**
-     * Updates an existing Tree model.
+     * Updates an existing Fauna model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -147,14 +148,14 @@ class TreeController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = Tree::controllerFind($id);
+        $model = Fauna::controllerFind($id);
         if (($post = App::post()) != null) {
 
-            foreach (Tree::PHOTO_KEYS as $attribute => $label) {
-                $post['Tree'][$attribute] = $post['Tree'][$attribute] ?? [];
+            foreach (Fauna::PHOTO_KEYS as $attribute => $label) {
+                $post['Fauna'][$attribute] = $post['Fauna'][$attribute] ?? [];
             }
             if ($model->load($post) && $model->validate()) {
-                $model->formatPhotos();
+                // $model->formatPhotos();
                 $model->save();
                 App::success('Successfully Updated');
                 return $this->redirect($model->viewUrl);
@@ -167,7 +168,7 @@ class TreeController extends Controller
     }
 
     /**
-     * Deletes an existing Tree model.
+     * Deletes an existing Fauna model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -175,7 +176,7 @@ class TreeController extends Controller
      */
     public function actionDelete($id)
     {
-        $model = Tree::controllerFind($id);
+        $model = Fauna::controllerFind($id);
 
         if($model->delete()) {
             App::success('Successfully Deleted');
@@ -229,11 +230,11 @@ class TreeController extends Controller
 
     public function actionValidate($id)
     {
-        $model = Tree::controllerFind($id);
+        $model = Fauna::controllerFind($id);
         if ($model->load(App::post()) && $model->validate()) {
-            $model->validateTree();
+            $model->validateFauna();
             if ($model->save()) {
-                App::success('Tree was validated');
+                App::success('Fauna was validated');
             }
         }
         $model->flashErrors();
@@ -243,12 +244,13 @@ class TreeController extends Controller
 
     public function actionMap()
     {
-        $searchModel = new TreeSearch();
-        $dataProvider = $searchModel->search(['TreeSearch' => App::queryParams()]);
-        // $coordinates = array_values(Tree::coordinates($dataProvider->models, $this) ?: []);
+        $searchModel = new FaunaSearch();
+        $dataProvider = $searchModel->search(['FaunaSearch' => App::queryParams()]);
+
+        // $coordinates = array_values(Fauna::coordinates($dataProvider->models, $this) ?: []);
 
         $data = $dataProvider->models;
-        $coordinates = ArrayHelper::toArray($data, ['Patrol' => []]);
+        $coordinates = ArrayHelper::toArray($data, ['Fauna' => []]);
 
         foreach ($coordinates as &$value) {
             if (isset($value['photos'][0])) {
@@ -270,12 +272,12 @@ class TreeController extends Controller
 
     public function actionPrintMapReport()
     {
-        $searchModel = new TreeSearch();
-        $searchModel->load(['TreeSearch' => App::queryParams()]);
+        $searchModel = new FaunaSearch();
+        $searchModel->load(['FaunaSearch' => App::queryParams()]);
 
-        $query = TreeSearch::mapQuery(App::queryParams());
+        $query = FaunaSearch::mapQuery(App::queryParams());
         $models = $query->all();
-        $coordinates = array_values(Tree::coordinates($models) ?: []);
+        $coordinates = array_values(Fauna::coordinates($models) ?: []);
 
         $this->layout = 'print';
         return $this->render('print-map-report', [

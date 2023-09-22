@@ -1107,10 +1107,11 @@ abstract class ActiveRecord extends \yii\db\ActiveRecord
         $action = $action ?: App::actionID();
         $model = self::findOrFailed($value, $field, $action);
 
-        if (App::modelBeforeCan($model, $action)) {
-            return $model;
-        }
-        throw new ForbiddenHttpException('Forbidden action to data');
+        return $model;
+        // if (App::modelBeforeCan($model, $action)) {
+        //     return $model;
+        // }
+        // throw new ForbiddenHttpException('Forbidden action to data');
     }
 
     public static function findOneAsArray($id)

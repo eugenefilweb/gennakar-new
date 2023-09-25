@@ -3,8 +3,11 @@
 use app\helpers\App;
 use app\helpers\Html;
 use app\helpers\Url;
+use app\models\Email;
 use app\widgets\Anchor;
 use app\widgets\Menu;
+use yii\web\User;
+
 
 $identity = App::identity();
 if ($identity) $identity->setTheProfile();

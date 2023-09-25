@@ -2,13 +2,12 @@
 
 namespace app\widgets;
 
-use app\helpers\Url;
-
 class Mapboxgl extends BaseWidget
 {
     public $access_token = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
     public $height = '100%';
-
+    public $center;
+    public $zoom;
 
     public function init() 
     {
@@ -18,9 +17,11 @@ class Mapboxgl extends BaseWidget
 
     public function run()
     {
-        return $this->render('mapbox-gl/index', [
+        return $this->render('mapboxgl/index', [
             'height' => $this->height,
-            'access_token' => $this->access_token
+            'accessToken' => $this->access_token,
+            'zoom' => $this->zoom,
+            'center' => $this->center
         ]);    
     }
 }

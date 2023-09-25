@@ -71,12 +71,12 @@ JS);
                 'stretch' => true
             ]) ?>
             <?php /*
- <?= OpenLayer::widget([
-     'latitude' => $model->latitude,
-     'longitude' => $model->longitude,
- ]) ?>
+                <?= OpenLayer::widget([
+                'latitude' => $model->latitude,
+                'longitude' => $model->longitude,
+                ]) ?>
 
- */?>
+                */?>
 
             <div id="map" style="height: 40%;"></div>
 
@@ -193,7 +193,7 @@ JS);
     const createTreeMarkerElement = () => {
         const markerElement = document.createElement('div');
         markerElement.className = 'tree-marker';
-        markerElement.innerHTML = `<?= Html::img("/assets/svg/zoo.svg", ['width' => 35, 'height' => 35]) ?>`
+        markerElement.innerHTML = `<?= Html::img("/assets/svg/hummingbird.svg", ['width' => 35, 'height' => 35]) ?>`
 
         return markerElement;
     }
@@ -204,7 +204,7 @@ JS);
                             <div class="d-flex justify-content-center align-items-center w-100 h-100 mb-3 mt-2">
 
                             <?= App::foreach() ?>
-                                <?= Html::tag('a', Html::image($coordinates['token'], ['w' => 200, 'h'=> 200], [
+                                <?= Html::tag('a', Html::image($coordinates['token'], ['w' => 200, 'h' => 200], [
                                     'style' => ['height: 100%; width: 100%;']
                                 ]), [
                                     'href' => $coordinates['token'] ? Url::toRoute(['file/viewer', 'token' => $coordinates['token']]) : Url::toRoute(['file/viewer', 'token' => App::setting('image')->image_holder]),

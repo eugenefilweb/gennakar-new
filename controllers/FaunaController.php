@@ -255,10 +255,13 @@ class FaunaController extends Controller
         foreach ($coordinates as &$value) {
             if (isset($value['photos'][0])) {
                 $value['photo_url'] = Url::image($value['photos'][0], ['width' => 500, 'height' => 500], true);
+                $value['token'] = $value['photos'][0];
             }else if(isset($value['photos']['fullheight'][0])){        
                 $value['photo_url'] = Url::image($value['photos']['fullheight'][0], ['width' => 500, 'height' => 500], true);
+                $value['token'] = $value['photos']['fullheight'][0];
             } else {
                 $value['photo_url'] = '';
+                $value['token'] = '';
             }
         }
 

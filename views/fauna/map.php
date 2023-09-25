@@ -8,13 +8,14 @@ use app\models\Fauna;
 use app\models\search\FaunaSearch;
 use app\widgets\ActiveForm;
 use app\widgets\Filter;
+
+use app\widgets\Mapboxgl;
+use yii\web\View;
+
 use app\widgets\LinkPager;
 use app\widgets\OpenLayer;
 use app\widgets\SearchButton;
 use \yii\data\Pagination;
-
-use yii\web\View;
-
 $this->title = 'Faunas: Map';
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['searchModel'] = $searchModel;
@@ -25,7 +26,7 @@ $this->params['wrapCard'] = false;
 $this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
 $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
 
-?>
+?>                            
 <div class="fauna-map-index-page">
     <div class="row">
         <div class="col-md-8">
@@ -50,9 +51,14 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
             */
             ?>
 
+            <?php /*
+            <?= Mapboxgl::widget([
+                'zoom' => 10,
+                'center' => [141.45,14.45]
+            ])?>
+            */ ?>
+
             <div id="map" style="height: 100%;"></div>
-
-
 
             <?php $this->endContent() ?>
         </div>
@@ -105,6 +111,7 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
     </div>
 </div>
 
+
 <script>
     mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
 
@@ -120,7 +127,7 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
     const createTreeMarkerElement = () => {
         const markerElement = document.createElement('div');
         markerElement.className = 'tree-marker';
-        markerElement.innerHTML = `<?= Html::img("/assets/svg/bird.png", ['width' => 35, 'height' => 35]) ?>`
+        markerElement.innerHTML = `<?= Html::img("/assets/svg/hummingbird.svg", ['width' => 35, 'height' => 35]) ?>`
 
         return markerElement;
     }
@@ -130,16 +137,10 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
         coordinates.map(coordinate => {
             const popupHtml = `<div class="m-1" style="background-color: #ffffff;">
                                 <div class="d-flex justify-content-center align-items-center w-100 h-100 mb-3 mt-2">
-                                    <img src=${coordinate.photo_url ? coordinate.photo_url : "/assets/svg/fauna_default.jpg"} style="width:100%; height:100%;">
                                 
-                                    <?php App::foreach($coordinates['token'] ?? [], 
-                                    fn($token)=> Html::tag('a', Html::image($token, ['w' => 200, 'h' => 200], [
-                                        'style' => ['height: 100%; width: 100%;']
-                                    ]), [
-                                        'href' => $token ? Url::toRoute(['file/viewer', 'token' => $token]) : Url::toRoute(['file/viewer', 'token' => App::setting('image')->image_holder]),
-                                        'target' => '_blank'
-                                    ])
-                                    );?>
+                                    <a href='https://gennakar.accessgov.ph/file/viewer?token=${coordinate.token}' style='height: 100%; weight: 100%;' target="_blank">
+                                        <img src=${coordinate.photo_url} style='height: 100%; weight: '100%';>
+                                    </a>
 
                                 </div>
                                 <h3 class="text-center">${coordinate.common_name.toUpperCase()}</h3>

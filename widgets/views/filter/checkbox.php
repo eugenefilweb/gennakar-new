@@ -8,6 +8,5 @@
         data-name ='<?= $name?>'
         data-attribute ='<?= $attribute?>'
         <?= $checked ?>> 
-
     <span></span> <?= $name ?>
 </label>

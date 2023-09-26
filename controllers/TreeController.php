@@ -68,10 +68,10 @@ class TreeController extends Controller
         $tree = $model->attributes;
 
         if (isset($tree['photos'][0])) {
-            $tree['photo_url'] = Url::image($tree['photos'][0], ['width' => 500, 'height' => 500], true);
+            $tree['photo_url'] = Url::image($tree['photos'][0], ['w' => 200, 'h' => 200], true);
             $tree['token'] = $tree['photos'][0];
         }else if(isset($tree['photos']['fullheight'][0])){        
-            $tree['photo_url'] = Url::image($tree['photos']['fullheight'][0], ['width' => 500, 'height' => 500], true);
+            $tree['photo_url'] = Url::image($tree['photos']['fullheight'][0], ['w' => 200, 'h' => 200], true);
             $tree['token'] = $tree['photos']['fullheight'][0];
         } else {
             $tree['photo_url'] = '';
@@ -252,9 +252,9 @@ class TreeController extends Controller
 
         foreach ($coordinates as &$value) {
             if (isset($value['photos'][0])) {
-                $value['photo_url'] = Url::image($value['photos'][0], ['width' => 500, 'height' => 500], true);
+                $value['photo_url'] = Url::image($value['photos'][0], ['w' => 200, 'h' => 200], true);
             }else if(isset($value['photos']['fullheight'][0])){        
-                $value['photo_url'] = Url::image($value['photos']['fullheight'][0], ['width' => 500, 'height' => 500], true);
+                $value['photo_url'] = Url::image($value['photos']['fullheight'][0], ['w' => 200, 'h' => 200], true);
             } else {
                 $value['photo_url'] = '';
             }

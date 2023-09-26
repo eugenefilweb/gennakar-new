@@ -9,6 +9,7 @@ use app\models\search\FaunaSearch;
 use app\widgets\ActiveForm;
 use app\widgets\Filter;
 
+use app\widgets\Mapbox;
 use app\widgets\Mapboxgl;
 use yii\web\View;
 
@@ -23,9 +24,10 @@ $this->params['showCreateButton'] = true;
 $this->params['activeMenuLink'] = '/fauna/map';
 $this->params['wrapCard'] = false;
 
-$this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
-$this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
+// $this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
+// $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
 
+$coordinates = json_encode($coordinates);
 ?>                            
 <div class="fauna-map-index-page">
     <div class="row">
@@ -51,14 +53,13 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
             */
             ?>
 
-            <?php /*
             <?= Mapboxgl::widget([
+                'coordinates' => $coordinates,
                 'zoom' => 10,
                 'center' => [141.45,14.45]
             ])?>
-            */ ?>
-
-            <div id="map" style="height: 100%;"></div>
+          
+            <!-- <div id="map" style="height: 100%;"></div> -->
 
             <?php $this->endContent() ?>
         </div>
@@ -111,7 +112,7 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
     </div>
 </div>
 
-
+<?php /*
 <script>
     mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
 
@@ -167,3 +168,5 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
     });
 
 </script>
+
+*/ ?>

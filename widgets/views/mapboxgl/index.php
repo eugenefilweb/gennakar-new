@@ -10,14 +10,15 @@ $this->registerJsFile('/assets/widget/js/mapboxgl.js');
 
 $center = json_encode($center);
 $zoom = json_encode($zoom);
-// $accesToken = json_encode($accessToken);
+$accesToken = json_encode($coordinates);
 
 $this->registerJs(<<<JS
 
   new MapboxWidget({
     'center' : $center,
     'zoom' : $zoom,
-    'accessToken' : 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg'
+    'accessToken' : 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg',
+    'coordinates': $coordinates
   }).init();
 
 JS);

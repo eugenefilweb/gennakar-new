@@ -91,7 +91,7 @@ class PatrolController extends Controller
 
         foreach ($trees as &$value) {
             if (isset($value['photos'][0])) {
-                $value['photo_url'] = Url::image($value['photos'][0], ['width' => 500, 'height' => 500], true);
+                $value['photo_url'] = Url::image($value['photos'][0], ['w' => 200, 'h' => 200], true);
             } else {
                 $value['photo_url'] = '';
             }
@@ -322,7 +322,6 @@ class PatrolController extends Controller
                 $coordinates[] = $userCoordinates;
             }
         }
-
         // $coordinates = App::foreach($dataProvider->models, function ($model) use($searchModel) {
         //     $data = App::foreach(array_values($model->coordinates), function($d) use($model, $searchModel) {
         //         $photo = Url::image($model->userPhoto, ['w' => 25]);

@@ -8,6 +8,7 @@ class Mapboxgl extends BaseWidget
     public $height = '100%';
     public $center;
     public $zoom;
+    public $coordinates;
 
     public function init() 
     {
@@ -21,7 +22,8 @@ class Mapboxgl extends BaseWidget
             'height' => $this->height,
             'accessToken' => $this->access_token,
             'zoom' => $this->zoom,
-            'center' => $this->center
+            'center' => $this->center,
+            'coordinates' => $this->coordinates
         ]);    
     }
 }

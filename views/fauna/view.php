@@ -90,71 +90,7 @@ JS);
             <?php $this->endContent() ?>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <?php $this->beginContent('@app/views/layouts/_card_wrapper.php', [
-                'title' => 'Photos',
-                'stretch' => true
-            ]) ?>
-            <!-- <table class="table table-bordered">
-                    <tbody>
-                        <?php //echo App::foreach(Fauna::PHOTO_KEYS, function($label, $attribute) use($model) {
-                        // $data = App::foreach($model->photos[$attribute] ?? [], 
-                        //     fn($token) => Html::tag('a', Html::image($token, ['w' => 200], [
-                        //         'class' => 'img-fluid m-2 symbol img-thumbnail',
-                        //         'style' => 'height: 150px'
-                        //     ]), [
-                        //         'href' => $token ? Url::toRoute(['file/viewer', 'token' => $token]):  Url::toRoute(['file/viewer', 'token' => App::setting('image')->image_holder]),
-                        //         'target' => '_blank'
-                        //     ])
-                        // );
-                        // return <<< HTML
-                        //     <tr>
-                        //         <th>{$label}</th>
-                        //         <td> {$data} </td>
-                        //     </tr>
-                        // HTML;
-                        // }) ?>
-                    </tbody>
-                </table> -->
-
-            <?php if (count(array_filter($model->photos, 'is_array')) > 0) { ?>
-
-                <?php $photos = array_merge([], ...array_values($model->photos)); //unpack categories as flat array values ?>
-
-                <?php $data = App::foreach(
-                    $photos ?? [],
-                    fn($token) => Html::tag('a', Html::image($token, ['w' => 200], [
-                        'class' => 'img-fluid m-2 symbol img-thumbnail',
-                        'style' => 'height: 150px'
-                    ]), [
-                        'href' => $token ? Url::toRoute(['file/viewer', 'token' => $token]) : Url::toRoute(['file/viewer', 'token' => App::setting('image')->image_holder]),
-                        'target' => '_blank'
-                    ])
-                ); ?>
-                <?= $data ?>
-
-            <?php } else { ?>
-
-                <?php $data = App::foreach(
-                    $model->photos ?? [],
-                    fn($token) => Html::tag('a', Html::image($token, ['w' => 200], [
-                        'class' => 'img-fluid m-2 symbol img-thumbnail',
-                        'style' => 'height: 150px'
-                    ]), [
-                        'href' => $token ? Url::toRoute(['file/viewer', 'token' => $token]) : Url::toRoute(['file/viewer', 'token' => App::setting('image')->image_holder]),
-                        'target' => '_blank'
-                    ])
-                ); ?>
-
-                <?= $data ?>
-
-            <?php } ?>
-
-
-            <?php $this->endContent() ?>
-        </div>
-    </div>
+ 
 </div>
 
 <div class="modal fade" id="modal-validate" data-backdrop="static" tabindex="-1" role="dialog"

@@ -75,6 +75,35 @@ class PatrolController extends Controller
      */
     public function actionView($id)
     {
+        // $model = Patrol::controllerFind($id);
+        // $searchModel = new TreeSearch();
+        // $queryParams = App::queryParams();
+        // if (isset($queryParams['id'])) {
+        //     unset($queryParams['id']);
+        // }
+        // $dataProvider = $searchModel->search(['TreeSearch' => $queryParams]);
+        // $dataProvider->query->andWhere(['patrol_id' => $model->id]);
+
+        // $data = $dataProvider->models;
+        // $trees = ArrayHelper::toArray($data, [
+        //     'Patrol' => []
+        // ]);
+
+        // foreach ($trees as &$value) {
+        //     if (isset($value['photos'][0])) {
+        //         $value['photo_url'] = Url::image($value['photos'][0], ['w' => 200, 'h' => 200], true);
+        //     } else {
+        //         $value['photo_url'] = '';
+        //     }
+            
+        // }
+        
+        // return $this->render('view', [
+        //     'model' => $model,
+        //     'dataProvider' => $dataProvider,
+        //     'searchModel' => $searchModel,
+        //     'trees' => $trees
+        // ]);
         $model = Patrol::controllerFind($id);
         $searchModel = new TreeSearch();
         $queryParams = App::queryParams();
@@ -84,25 +113,35 @@ class PatrolController extends Controller
         $dataProvider = $searchModel->search(['TreeSearch' => $queryParams]);
         $dataProvider->query->andWhere(['patrol_id' => $model->id]);
 
-        $data = $dataProvider->models;
-        $trees = ArrayHelper::toArray($data, [
-            'Patrol' => []
-        ]);
+        $searchModelFauna = new \app\models\search\FaunaSearch();
+        $dataProviderFauna = $searchModelFauna->search(['FaunaSearch' => $queryParams]);
+        $dataProviderFauna->query->andWhere(['patrol_id' => $model->id]);
 
+        $dataProviderFauna = $dataProviderFauna->models;
+        $dataProviderFauna = ArrayHelper::toArray($dataProviderFauna, ['Fauna' => []]);
+
+        $data = $dataProvider->models;
+        $trees = ArrayHelper::toArray($data, ['Patrol' => []]);
+
+        // Iterate through the $trees array and update the 'photo_url' key
         foreach ($trees as &$value) {
             if (isset($value['photos'][0])) {
-                $value['photo_url'] = Url::image($value['photos'][0], ['w' => 200, 'h' => 200], true);
+                $value['photo_url'] = Url::image($value['photos'][0], ['w' => 100, 'h' => 100], true);
             } else {
-                $value['photo_url'] = '';
+                $value['photo_url'] = ''; // Provide a default value if 'photos' is empty or undefined
             }
-            
         }
+
+        // Don't forget to unset the reference to avoid modifying $trees unintentionally
+        // unset($value);
         
         return $this->render('view', [
             'model' => $model,
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
-            'trees' => $trees
+            'trees' => $trees,
+            'dataProviderFauna' => $dataProviderFauna,
+            'searchModelFauna' => $searchModelFauna,
         ]);
     }
 
@@ -303,25 +342,43 @@ class PatrolController extends Controller
 
         
         $data = $dataProvider->models;
-        $coordinates = [];
+        $coordinates = ArrayHelper::toArray($data, ['Patrol'=> []]);
 
-        foreach ($data as $value) {
-            $user_id = $value->user_id;
+        foreach($coordinates as $key => &$value){
+
+            $user_id = $value['user_id'];
             $profile = new ProfileForm(['user_id' => $user_id]);
             $user_fullName = $profile->getFullname();
 
-            $coordinatesArray = $value->attributes['coordinates'];
-
-            $userCoordinates = array_map(function ($coordinate) use ($user_id, $user_fullName) {
-                $coordinate['user_id'] = $user_id;
-                $coordinate['full_name'] = $user_fullName;
-                return $coordinate;
-            }, $coordinatesArray);
-
-            if (!empty($userCoordinates)) {
-                $coordinates[] = $userCoordinates;
+            foreach($value['coordinates'] as $key2 => &$value2){
+                if(!empty($value2)){
+                    $value2['user_id'] = $user_id;
+                    $value2['full_name'] = $user_fullName;
+                }
             }
         }
+
+        // $coordinates = [];
+
+        // foreach ($data as $value) {
+        //     $user_id = $value->user_id;
+        //     $profile = new ProfileForm(['user_id' => $user_id]);
+        //     $user_fullName = $profile->getFullname();
+
+        //     $coordinatesArray = $value->attributes['coordinates'];
+
+        //     $userCoordinates = array_map(function ($coordinate) use ($user_id, $user_fullName) {
+        //         $coordinate['user_id'] = $user_id;
+        //         $coordinate['full_name'] = $user_fullName;
+        //         return $coordinate;
+        //     }, $coordinatesArray);
+
+        //     if (!empty($userCoordinates)) {
+        //         $coordinates[] = $userCoordinates;
+        //     }
+        // }
+
+
         // $coordinates = App::foreach($dataProvider->models, function ($model) use($searchModel) {
         //     $data = App::foreach(array_values($model->coordinates), function($d) use($model, $searchModel) {
         //         $photo = Url::image($model->userPhoto, ['w' => 25]);

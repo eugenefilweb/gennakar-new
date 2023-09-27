@@ -77,10 +77,10 @@ class TreeSearch extends Tree
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => ['defaultOrder' => ['created_at' => SORT_DESC]],
-            'pagination' => false
-            // [
-            //     'pageSize' => $this->pagination
-            // ]
+            'pagination' => 
+            [
+                'pageSize' => $this->pagination
+            ]
         ]);
 
         if (!$this->validate()) {

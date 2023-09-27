@@ -1291,8 +1291,9 @@ $params = [
                     'opacity' => 85,
                     'visible' => false 
                 ]
-            ]
-        ]
+            ],
+        ],
+            'mapboxglAccessToken' => 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg',
     ],
     'other_plans' => [
         [

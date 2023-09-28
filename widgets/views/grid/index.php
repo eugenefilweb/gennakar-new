@@ -26,4 +26,4 @@ $this->registerWidgetJs($widgetFunction, $js);
 
 
 ?>
-<?php GridView::widget($data)?>
+<?= GridView::widget($data)?>

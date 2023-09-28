@@ -9,6 +9,7 @@ class Mapboxgl extends BaseWidget
     public $center;
     public $zoom;
     public $coordinates;
+    public $enableDrawing = true;
 
     public function init() 
     {
@@ -23,7 +24,8 @@ class Mapboxgl extends BaseWidget
             'accessToken' => $this->access_token,
             'zoom' => $this->zoom,
             'center' => $this->center,
-            'coordinates' => $this->coordinates
+            'coordinates' => $this->coordinates,
+            'enableDrawing' => $this->enableDrawing
         ]);    
     }
 }

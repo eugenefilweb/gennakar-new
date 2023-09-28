@@ -1,6 +1,7 @@
 <?php
 
-use app\widgets\MapboxGl;
+use app\widgets\Mapbox;
+use app\widgets\Mapboxgl;
 use \yii\data\Pagination;
 use app\helpers\App;
 use app\helpers\Html;
@@ -20,14 +21,14 @@ $this->params['searchModel'] = $searchModel;
 $this->params['activeMenuLink'] = '/patrol/map';
 $this->params['wrapCard'] = false;
 
-$this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
-$this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
-
+// $this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
+// $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
 ?>
 
 <style>
   .popup .title {
     font-weight: bold;
+    margin-right: .5rem;
   }
 </style>
 
@@ -42,7 +43,18 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
         'stretch' => true
       ]) ?>
 
-      <div id="map" style="height: 100%;"></div>
+      <!-- <div id="map" style="height: 100%;"></div> -->
+
+      <?php /*
+      <?= Mapbox::widget([
+        'styleUrl' => 'mapbox://styles/mapbox/satellite-streets-v12'
+      ]) ?>
+      */ ?>
+
+      <?= Mapboxgl::widget([
+        'center' => [121.45,14.45],
+        'coordinates' => $coordinates
+      ])?>
 
       <?php $this->endContent() ?>
 
@@ -92,6 +104,7 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
               value="<?= $searchModel->map_zoom_level ?>" step="1" style="width: -webkit-fill-available;">
           </div>
 
+          <?php /*
           <div class="text-center">
             <?= LinkPager::widget([
               'options' => [
@@ -100,6 +113,7 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
               'pagination' => new Pagination(['totalCount' => $dataProvider->totalCount])
             ]) ?>
           </div>
+          */ ?>
 
         </div>
       </div>
@@ -112,6 +126,7 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
   </div>
 </div>
 
+<?php /*
 <script>
   mapboxgl.accessToken = <?= json_encode(Yii::$app->params['mapbox']['mapboxglAccessToken']) ?>;
 
@@ -192,7 +207,7 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
 
   const map1 = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v12',
+    style: 'mapbox://styles/mapbox/satellite-streets-v12',
     center: [121.45, 14.25],
     zoom: <?= json_encode($searchModel->map_zoom_level) ?>
   });
@@ -326,3 +341,4 @@ $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-
   });
 
 </script>
+*/ ?>

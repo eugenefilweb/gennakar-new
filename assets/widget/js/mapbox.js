@@ -6,6 +6,7 @@ class MapboxWidget {
 		this.widgetId = widgetId;
 		this.accessToken = accessToken;
 		this.lnglat = lnglat;
+		// this.enableGeocoder = enableGeocoder;
 		this.enableGeocoder = enableGeocoder;
 		this.enableNavigationController = enableNavigationController;
         this.enableDrawing = enableDrawing;
@@ -22,13 +23,16 @@ class MapboxWidget {
 	createMapInstance() {
 		return new mapboxgl.Map({
 	        container: this.widgetId, // container ID
-            style: this.styleUrl, // style URL
+            // style: this.styleUrl, // style URL
+            style: 'mapbox://styles/mapbox/satellite-streets-v12', // style URL
 	        // style: 'mapbox://styles/roelfilweb/cli146vxi02hd01pgel9nez2k', // style URL
 	        center: this.lnglat, // starting position [lng, lat]
 	        zoom: this.zoom || 13, // starting zoom,
-	        pitch: 60,
-	        antialias: true,
-	        bearing: -17.6,
+	        // pitch: 60,
+	        // pitch: 0,
+	        // antialias: true,
+	        // bearing: -17.6,
+	        // bearing: 0,
 	    });
 	}
 
@@ -365,7 +369,7 @@ class MapboxWidget {
             }
         }, 'building');
 
-        /*this.map.addLayer({
+        this.map.addLayer({
             id: 'flood-quezion-25yr',
             type: 'fill',
             source: {
@@ -389,46 +393,51 @@ class MapboxWidget {
                 'fill-color': 'blue', // Specify the fill color for the flood area
                 'fill-opacity': 0.2 // Specify the fill opacity for the flood area (0-1)
             }
-        }, 'building');*/
+        }, 'building');
+    }
+
+    addFullscreenControl() {
+        const fullscreenControl = new mapboxgl.FullscreenControl();
+        this.map.addControl(fullscreenControl, 'bottom-right');
     }
 
 	init() {
-        this.initLoadScript(this);
+        // this.initLoadScript(this);
 
- 		if (this.enableGeocoder) {
-	    	this.addGeocoderPlugin();
- 		}
+ 		// if (this.enableGeocoder) {
+	    // 	this.addGeocoderPlugin();
+ 		// }
 
- 		if (this.enableNavigationController) {
-	    	this.addNavigationDirection();
- 		}
+ 		// if (this.enableNavigationController) {
+	    // 	this.addNavigationDirection();
+ 		// }
  		
- 		if (this.enableDrawing) {
-	    	this.addMapboxDraw();
- 		}
+ 		// if (this.enableDrawing) {
+	    // 	this.addMapboxDraw();
+ 		// }
 
 	    // this.addMarker();
 	    // this.addNavigationControl();
 	    // this.addPopover();
-	    this.addScaleControl();
-	    this.addGeolocateControl();
+	    // this.addScaleControl();
+	    // this.addGeolocateControl();
 	    // setPov();
 
-	    this.map.on('click', (e) => {
-	        console.log('click', e);
-	    });
+	    // this.map.on('click', (e) => {
+	    //     console.log('click', e);
+	    // });
 
-        this.map.on('dataloading', (e) => {
-            this.dataloadingScript(this.map, e);
-        });
+        // this.map.on('dataloading', (e) => {
+        //     this.dataloadingScript(this.map, e);
+        // });
 
-        this.map.on('sourcedata', (e) => {
-            this.sourcedataScript(this.map, e);
-        });
+        // this.map.on('sourcedata', (e) => {
+        //     this.sourcedataScript(this.map, e);
+        // });
 
 
 	    this.map.on('load', () => {
-            this.mapLoadScript(this.map);
+            // this.mapLoadScript(this.map);
 	        // this.addFloodLayer();
 	        // addMarkerWithSymbol();
 	        // addLineString();
@@ -452,12 +461,16 @@ class MapboxWidget {
 	        //     },
 	        //     'source-layer': 'RPD_Parks'
 	        // });
+
+            // this.addFullscreenControl();
+            map.addControl(new mapboxgl.FullscreenControl());
 	    });
 
-	    this.map.on('style.load', () => {
-	        this.add3DBuilding();
+	    // this.map.on('style.load', () => {
+	    //     this.add3DBuilding();
 
-	        // this.add3dTerrain();
-	    });
+	    //     this.add3dTerrain();
+
+	    // });
 	}
 }

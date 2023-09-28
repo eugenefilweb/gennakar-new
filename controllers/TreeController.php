@@ -63,14 +63,13 @@ class TreeController extends Controller
      */
     public function actionView($id)
     {
-
         $model = Tree::controllerFind($id);
         $tree = $model->attributes;
 
         if (isset($tree['photos'][0])) {
             $tree['photo_url'] = Url::image($tree['photos'][0], ['w' => 200, 'h' => 200], true);
             $tree['token'] = $tree['photos'][0];
-        }else if(isset($tree['photos']['fullheight'][0])){        
+        } else if(isset($tree['photos']['fullheight'][0])){        
             $tree['photo_url'] = Url::image($tree['photos']['fullheight'][0], ['w' => 200, 'h' => 200], true);
             $tree['token'] = $tree['photos']['fullheight'][0];
         } else {
@@ -245,6 +244,7 @@ class TreeController extends Controller
     {
         $searchModel = new TreeSearch();
         $dataProvider = $searchModel->search(['TreeSearch' => App::queryParams()]);
+        $dataProvider->pagination=false;
         // $coordinates = array_values(Tree::coordinates($dataProvider->models, $this) ?: []);
 
         $data = $dataProvider->models;

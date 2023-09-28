@@ -24,8 +24,8 @@ $this->params['showCreateButton'] = true;
 $this->params['activeMenuLink'] = '/fauna/map';
 $this->params['wrapCard'] = false;
 
-// $this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
-// $this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
+$this->registerCssFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css', ['position' => View::POS_HEAD]);
+$this->registerJsFile('https://api.tiles.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js', ['position' => View::POS_HEAD]);
 
 $coordinates = json_encode($coordinates);
 ?>                            
@@ -52,6 +52,8 @@ $coordinates = json_encode($coordinates);
 
             */
             ?>
+             <?php
+            /*
 
             <?= Mapboxgl::widget([
                 'coordinates' => $coordinates,
@@ -59,7 +61,9 @@ $coordinates = json_encode($coordinates);
                 'center' => [141.45,14.45]
             ])?>
           
-            <!-- <div id="map" style="height: 100%;"></div> -->
+             */
+            ?>
+            <div id="map" style="height: 100%;"></div>
 
             <?php $this->endContent() ?>
         </div>
@@ -112,7 +116,7 @@ $coordinates = json_encode($coordinates);
     </div>
 </div>
 
-<?php /*
+
 <script>
     mapboxgl.accessToken = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
 
@@ -120,7 +124,8 @@ $coordinates = json_encode($coordinates);
 
     const map1 = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v12',
+        // style: 'mapbox://styles/mapbox/satellite-v9',
+        style: 'mapbox://styles/mapbox/satellite-streets-v12',
         center: [121.0449656, 14.3635678],
         zoom: <?= json_encode($searchModel->map_zoom_level ?: 9) ?>,
     });
@@ -132,6 +137,7 @@ $coordinates = json_encode($coordinates);
 
         return markerElement;
     }
+    console.log(coordinates);
 
     map1.on('load', () => {
 
@@ -169,4 +175,6 @@ $coordinates = json_encode($coordinates);
 
 </script>
 
-*/ ?>
+
+
+

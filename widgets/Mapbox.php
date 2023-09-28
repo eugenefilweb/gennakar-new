@@ -11,7 +11,7 @@ class Mapbox extends BaseWidget
     public $lnglat = [121.6203181, 14.7571113];
     public $enableDrawing = true;
     public $enableGeocoder = true;
-    public $enableNavigationController = false;
+    public $enableNavigationController = true;
     public $mapLoadScript;
     public $initLoadScript;
     public $dataloadingScript;

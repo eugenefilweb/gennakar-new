@@ -25,27 +25,35 @@ $this->addCssFile([
 
 $this->registerWidgetCssFile('mapbox');
 
-$center = json_encode($center);
-$zoom = json_encode($zoom);
-$coordinates = json_encode($coordinates);
+// $center = json_encode($center);
+// $zoom = json_encode($zoom);
+// $patrolCoordinates = json_encode($patrolCoordinates);
+// $accessToken = json_encode($accessToken);
+// $multipleDirections = json_encode($multipleDirections);
+// $faunaCoordinates = json_encode($faunaCoordinates);
+// $floraCoordinates = json_encode($floraCoordinates);
 
 $this->registerJs(<<<JS
 
   new MapboxWidget({
     'center' : {$center},
     'zoom' : {$zoom},
-    'accessToken' : 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg',
-    'coordinates': {$coordinates}
+    'accessToken' : '{$accessToken}',
+    'patrolCoordinates': {$patrolCoordinates},
+    'floraCoordinates' : {$floraCoordinates},
+    'faunaCoordinates' : {$faunaCoordinates},
+    'enableDrawing' : {$enableDrawing},
+    'multipleDirections' : {$multipleDirections},
   }).init();
 
 JS);
 
 ?>
 
-<div id="mapbox" style="height: 100%;"></div>
+<div id="mapbox" style="height: <?=$height ?>"></div>
 
 <div class="">
-    <div id="mapbox" style="height: 100%;"></div>
+    <div id="mapbox" style="height: <?=$height?>"></div>
     <?= App::if($enableDrawing == 'true', <<< HTML
 	    <div class="calculation-box"> 
 	    	<div id="calculated-area">
@@ -55,3 +63,4 @@ JS);
 	HTML) ?>
 
 </div>
+

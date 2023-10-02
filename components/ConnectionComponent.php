@@ -21,7 +21,7 @@ class ConnectionComponent extends \yii\db\Connection
     public $charset = 'utf8';
     public $tablePrefix = 'tbl_';
 
-    // public $enableSchemaCache = true;
-    // public $schemaCacheDuration = 60;
-    // public $schemaCache = 'cache';
+    public $enableSchemaCache = true;
+    public $schemaCacheDuration = 60;
+    public $schemaCache = 'cache';
 }

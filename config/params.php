@@ -125,6 +125,7 @@ $params = [
          ],
         
     'mapbox' => [
+        'accessToken' => 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg',
         'color_pallete' => [
             'red' => ['#f2c94c', '#f2994a', '#eb5757'],
             'purple' => ['#fdacb2', '#fa5f96', '#c21d7d'],
@@ -1293,7 +1294,7 @@ $params = [
                 ]
             ],
         ],
-            'mapboxglAccessToken' => 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg',
+            
     ],
     'other_plans' => [
         [

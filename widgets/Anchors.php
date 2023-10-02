@@ -132,7 +132,7 @@ class Anchors extends BaseWidget
      * {@inheritdoc}
      */
     public function run()
-    {
+    {   
         return  implode(' ', [
             implode($this->glue, $this->anchors ?: []),
             $this->addtionalButtons

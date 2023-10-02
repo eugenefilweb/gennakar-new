@@ -1,31 +1,39 @@
 <?php
 
 namespace app\widgets;
+use Yii;
 
 class Mapboxgl extends BaseWidget
 {
-    public $access_token = 'pk.eyJ1Ijoicm9lbGZpbHdlYiIsImEiOiJjbGh6am1tankwZzZzM25yczRhMWhhdXRmIn0.aLWnLb36hKDFVFmKsClJkg';
+    public $accessToken;
     public $height = '100%';
-    public $center;
-    public $zoom;
-    public $coordinates;
+    public $center = [121.048442,14.361508];
+    public $zoom = 10;
+    public $patrolCoordinates;
+    public $floraCoordinates;
+    public $faunaCoordinates;
     public $enableDrawing = true;
+    public $multipleDirections = true;
 
     public function init() 
     {
         parent::init();
-
+        
+        $this->accessToken = Yii::$app->params['mapbox']['accessToken'];
     }
 
     public function run()
     {
         return $this->render('mapboxgl/index', [
+            'accessToken' => $this->accessToken,
             'height' => $this->height,
-            'accessToken' => $this->access_token,
+            'center' => json_encode($this->center),
             'zoom' => $this->zoom,
-            'center' => $this->center,
-            'coordinates' => $this->coordinates,
-            'enableDrawing' => $this->enableDrawing
+            'floraCoordinates' =>  json_encode($this->floraCoordinates),
+            'patrolCoordinates' => json_encode($this->patrolCoordinates),
+            'faunaCoordinates' => json_encode($this->faunaCoordinates),
+            'enableDrawing' => json_encode($this->enableDrawing),
+            'multipleDirections' => json_encode($this->multipleDirections),
         ]);    
     }
 }

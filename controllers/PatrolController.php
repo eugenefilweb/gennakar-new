@@ -113,6 +113,9 @@ class PatrolController extends Controller
         $dataProvider = $searchModel->search(['TreeSearch' => $queryParams]);
         $dataProvider->query->andWhere(['patrol_id' => $model->id]);
 
+        $data = $dataProvider->models;
+        $trees = ArrayHelper::toArray($data, ['Patrol' => []]);
+
         $searchModelFauna = new \app\models\search\FaunaSearch();
         $dataProviderFauna = $searchModelFauna->search(['FaunaSearch' => $queryParams]);
         $dataProviderFauna->query->andWhere(['patrol_id' => $model->id]);
@@ -120,10 +123,6 @@ class PatrolController extends Controller
         $dataProviderFauna = $dataProviderFauna->models;
         $dataProviderFauna = ArrayHelper::toArray($dataProviderFauna, ['Fauna' => []]);
 
-        $data = $dataProvider->models;
-        $trees = ArrayHelper::toArray($data, ['Patrol' => []]);
-
-        // Iterate through the $trees array and update the 'photo_url' key
         foreach ($trees as &$value) {
             if (isset($value['photos'][0])) {
                 $value['photo_url'] = Url::image($value['photos'][0], ['w' => 100, 'h' => 100], true);
@@ -132,9 +131,6 @@ class PatrolController extends Controller
             }
         }
 
-        // Don't forget to unset the reference to avoid modifying $trees unintentionally
-        // unset($value);
-        
         return $this->render('view', [
             'model' => $model,
             'dataProvider' => $dataProvider,

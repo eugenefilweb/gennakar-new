@@ -21,6 +21,17 @@ $this->params['searchModel'] = $searchModel;
 $this->params['activeMenuLink'] = '/patrol/map';
 $this->params['wrapCard'] = false;
 
+
+print_r($this->asJson([
+  'status' => 'success',
+  'activeSpace' => $activeSpace,
+  'spaceMessages' => $activeSpace ? $activeSpace->loadMessages: [],
+  'spaceGroups' => $activeSpace ? $activeSpace->spaceGroups: [],
+  'availableUsers' => $activeSpace ? $activeSpace->availableUsers: [],
+  'currentUser' => $identity,
+]))
+die;
+
 ?>
 
 <style>

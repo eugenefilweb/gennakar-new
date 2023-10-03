@@ -118,7 +118,8 @@ class EnvironmentalIncident extends ActiveRecord
                       $incidents = $incidents?ArrayHelper::index($incidents, 'id'):[];
                       $incidents_type = $model->incident && ($incidents_type = $incidents[$model->incident]['incident_type'])?ArrayHelper::index($incidents_type, 'id'):[];
                       
-                      return $incidents_type[$model->incident_type]['label']; 
+                    //   return $incidents_type[$model->incident_type]['label']; 
+                      return $incidents_type[$model->incident_type]['label'] ?? false; 
                 }
             ],
             'date_time' => ['attribute' => 'date_time', 'format' => 'raw'],

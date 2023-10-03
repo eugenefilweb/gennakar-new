@@ -25,7 +25,7 @@ class Version1Module extends \yii\base\Module
             'mailer' => 'app\modules\api\v1\components\MailerComponent',
             'user' => [
                 'class' => 'app\modules\api\v1\components\UserComponent',
-                'enableSession' => false
+                'enableSession' => true
             ],
             'request' => 'app\modules\api\v1\components\RequestComponent',
             'response' => 'app\modules\api\v1\components\ResponseComponent',

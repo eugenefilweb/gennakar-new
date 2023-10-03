@@ -19,12 +19,14 @@ class PatrolController extends ActiveController
 
         $actions['index']['prepareSearchQuery'] = function($query, $requestParams) {
             $query->andFilterWhere(['or', 
-                ['like', 'notes', $requestParams['keywords'] ?? ''],  
-                ['like', 'watershed', $requestParams['keywords'] ?? ''],  
+            //     ['like', 'notes', $requestParams['keywords'] ?? ''],  
+                // ['like', 'watershed', $requestParams['keywords'] ?? ''],  
+                ['like', 'status', $requestParams['status'] ?? ''],  
             ]);
 
-            $query->andWhere(['user_id' => $requestParams['user_id']]);
-            $query->andWhere(['status' => $requestParams['status']]);
+           // $query->andWhere(['user_id' => $requestParams['user_id']]);
+            $query->andWhere(['created_by' => App::identity('id')]);
+            // $query->andWhere(['status' => $requestParams['status']]);
 
             return $query;
         };

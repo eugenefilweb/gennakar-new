@@ -337,22 +337,48 @@ class PatrolController extends Controller
         $dataProvider = $searchModel->search(['PatrolSearch' => $queryParams]);
 
         
+        // $data = $dataProvider->models;
+        // $coordinates = ArrayHelper::toArray($data, ['Patrol'=> []]);
+
+        // foreach($coordinates as $key => &$value){
+
+        //     $user_id = $value['user_id'];
+        //     $profile = new ProfileForm(['user_id' => $user_id]);
+        //     $user_fullName = $profile->getFullname();
+
+        //     foreach($value['coordinates'] as $key2 => &$value2){
+        //         if(!empty($value2)){
+        //             $value2['user_id'] = $user_id;
+        //             $value2['full_name'] = $user_fullName;
+        //         }
+        //     }
+        // }
+
+    
+
         $data = $dataProvider->models;
-        $coordinates = ArrayHelper::toArray($data, ['Patrol'=> []]);
+        $coordinates = [];
 
-        foreach($coordinates as $key => &$value){
-
-            $user_id = $value['user_id'];
+        foreach ($data as $value) {
+            $user_id = $value->user_id;
             $profile = new ProfileForm(['user_id' => $user_id]);
             $user_fullName = $profile->getFullname();
 
-            foreach($value['coordinates'] as $key2 => &$value2){
-                if(!empty($value2)){
-                    $value2['user_id'] = $user_id;
-                    $value2['full_name'] = $user_fullName;
-                }
+            $coordinatesArray = $value->attributes['coordinates'];
+
+            $userCoordinates = array_map(function ($coordinate) use ($user_id, $user_fullName) {
+                $coordinate['user_id'] = $user_id;
+                $coordinate['full_name'] = $user_fullName;
+                return $coordinate;
+            }, $coordinatesArray);
+
+            if (!empty($userCoordinates)) {
+                $coordinates[] = $userCoordinates;
             }
         }
+
+        // print_r($coordinates);
+        // die;
 
         // $coordinates = [];
 

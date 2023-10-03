@@ -13,11 +13,12 @@ class SyncPatrolForm extends \yii\base\Model
 {
     public $patrol; 
     public $trees; 
+    public $faunas; 
   
     public function rules()
     {
         return [
-            [['patrol', 'trees'], 'required'],
+            [['patrol', 'trees', 'faunas'], 'required'],
         ];
     }
 
@@ -63,6 +64,7 @@ class SyncPatrolForm extends \yii\base\Model
             ]);
 
             if ($patrol->save()) {
+                // FLORAS::BEGIN
                 $trees = App::foreach($this->trees, function ($tree, $index) use($patrol, &$response) {
                     $photos = App::foreach(Tree::PHOTO_KEYS, function($category, $key) use($index, &$response) {
                         $tokens = App::foreach(
@@ -104,7 +106,11 @@ class SyncPatrolForm extends \yii\base\Model
                         'species' => $tree['species'] ?? '',
                         'sub_species' => $tree['sub_species'] ?? '',
                         'varieta_and_infra_var_name' => $tree['varieta_and_infra_var_name'] ?? '',
-                        'taxonomic_group' => $tree['taxonomic_group'] ?? '',
+                        // 'taxonomic_group' => $tree['taxonomic_group'] ?? '',
+                        'growth_habit' => $tree['growth_habit'] ?? '',
+                        'category_id' => $tree['category_id'] ?? '',
+                        'conservation_status' => $tree['conservation_status'] ?? '',
+                        'diameter' => $tree['diameter'] ?? '',
                         'date_encoded' => date('Y-m-d H:i:s', strtotime($tree['date_encoded'] ?? '')),
                         'description' => $tree['description'] ?? '',
                         'latitude' => $coordinate['lon'],
@@ -123,9 +129,78 @@ class SyncPatrolForm extends \yii\base\Model
 
                 Tree::batchInsert(array_values($trees));
                 $patrol->refresh();
+                // FLORAS::END
+                
+                // FAUNAS::BEGIN
+                $faunas = App::foreach($this->faunas, function ($fauna, $index) use($patrol, &$response) {
+                    $photos = App::foreach(Fauna::PHOTO_KEYS, function($category, $key) use($index, &$response) {
+                        $tokens = App::foreach(
+                            UploadedFile::getInstancesByName("faunas[{$index}][{$key}]"), 
+                            function($fileInput, $file_key) use(&$response, $key) {
+                                $uploadForm = new UploadForm([
+                                    'modelName' => 'Fauna',
+                                    'tag' => 'Fauna',
+                                ]);
+                                $uploadForm->fileInput = $fileInput;
+
+                                if (($file = $uploadForm->upload()) != false) {
+                                    $response['files'][$key][$file_key]['status'] = true;
+                                    $response['files'][$key][$file_key]['fileInput'] = $fileInput;
+                                    return $file->token;
+                                }
+                                else {
+                                    $response['files'][$key][$file_key]['status'] = false;
+                                    $response['files'][$key][$file_key]['fileInput'] = $fileInput;
+                                }
+                            }, 
+                            false
+                        );
+                        return $tokens ?: [null];
+                    }, false);
+
+                    $coordinate = App::formatter()->asEPSG3857([
+                        'lat' => $fauna['latitude'] ?? 0,
+                        'lon' => $fauna['longitude'] ?? 0,
+                    ]);
+
+                    return [
+                        'patrol_id' => $patrol->id,
+                        'app_id' => $fauna['appId'] ?? '',
+                        'common_name' => $fauna['common_name'] ?? '',
+                        'kingdom' => $fauna['kingdom'] ?? '',
+                        'family' => $fauna['family'] ?? '',
+                        'genus' => $fauna['genus'] ?? '',
+                        'species' => $fauna['species'] ?? '',
+                        'sub_species' => $fauna['sub_species'] ?? '',
+                        'varieta_and_infra_var_name' => $fauna['varieta_and_infra_var_name'] ?? '',
+                        // 'taxonomic_group' => $fauna['taxonomic_group'] ?? '',
+                        'growth_habit' => $fauna['growth_habit'] ?? '',
+                        'category_id' => $fauna['category_id'] ?? '',
+                        'conservation_status' => $fauna['conservation_status'] ?? '',
+                        'diameter' => $fauna['diameter'] ?? '',
+                        'date_encoded' => date('Y-m-d H:i:s', strtotime($fauna['date_encoded'] ?? '')),
+                        'description' => $fauna['description'] ?? '',
+                        'latitude' => $coordinate['lon'],
+                        'longitude' => $coordinate['lat'],
+                        'validated_by_id' => 0,
+                        'notes' => $fauna['notes'] ?? '',
+                        'photos' => json_encode($photos),
+                        'status' => Fauna::NOT_VALIDATED,
+                        'record_status' => Fauna::RECORD_ACTIVE,
+                        'created_at' => new Expression('UTC_TIMESTAMP'),
+                        'updated_at' => new Expression('UTC_TIMESTAMP'),
+                        'created_by' => $patrol->user_id,
+                        'updated_by' => $patrol->user_id,
+                    ];
+                }, false);
+
+                Fauna::batchInsert(array_values($faunas));
+                $patrol->refresh();
+                // FAUNAS::END
 
                 $response['status'] = true;
                 $response['trees'] = Tree::findAll(['patrol_id' => $patrol->id]);
+                $response['faunas'] = Fauna::findAll(['patrol_id' => $patrol->id]);
                 $response['patrol'] = $patrol;
             }
             else {

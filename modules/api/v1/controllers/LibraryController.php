@@ -25,8 +25,9 @@ class LibraryController extends ActiveController
         //         ['like', 'species', $requestParams['keywords'] ?? ''],  
         //         ['like', 'common_name', $requestParams['keywords'] ?? ''],  
         //         ['like', 'taxonomic_group', $requestParams['keywords'] ?? ''],  
+        //         ['like', 'growth_habit', $requestParams['keywords'] ?? ''],  
         //         ['like', 'conservation_status', $requestParams['keywords'] ?? ''],  
-        //         ['like', 'residency_status', $requestParams['keywords'] ?? ''],  
+        //         ['like', 'distribution_status', $requestParams['keywords'] ?? ''],  
         //     ]);
 
         //     return $query;
@@ -50,9 +51,10 @@ class LibraryController extends ActiveController
                     ['like', 'genus', $requestParams['keywords'] ?? ''],
                     ['like', 'species', $requestParams['keywords'] ?? ''],
                     ['like', 'common_name', $requestParams['keywords'] ?? ''],
-                    ['like', 'taxonomic_group', $requestParams['keywords'] ?? ''],
+                    // ['like', 'taxonomic_group', $requestParams['keywords'] ?? ''],
+                    ['like', 'growth_habit', $requestParams['keywords'] ?? ''],
                     ['like', 'conservation_status', $requestParams['keywords'] ?? ''],
-                    ['like', 'residency_status', $requestParams['keywords'] ?? ''],
+                    ['like', 'distribution_status', $requestParams['keywords'] ?? ''],
                 ]),
             'pagination' => [
                 'pageSizeLimit' => [0, 1000]

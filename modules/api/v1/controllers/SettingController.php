@@ -4,6 +4,7 @@ namespace app\modules\api\v1\controllers;
 use Yii;
 use app\modules\api\v1\helpers\App;
 use app\modules\api\v1\models\HazardMap;
+use app\modules\api\v1\models\Barangay;
 
 class SettingController extends ActiveController
 {
@@ -39,6 +40,9 @@ class SettingController extends ActiveController
             'general' => App::setting('mobileApp'),
             'watersheds' => HazardMap::watersheds(),
             'incidents' =>App::params('incidents'),
+            'floras' =>App::params('floras'),
+            'faunas' =>App::params('faunas'),
+            'barangays' => Barangay::barangays(),
         ];
     }
     
